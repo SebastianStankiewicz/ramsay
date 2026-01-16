@@ -1,0 +1,17 @@
+{
+    "action": {
+        "isDeposit": true,
+        "type": "vaultTransfer",
+        "usd": 10000000,
+        "vaultAddress": "0xa15099a30bbf2e68942d6f4c43d70d04faeab0a0"
+    },
+    "expiresAfter": 1768602207414,
+    "isFrontend": true,
+    "nonce": 1768602194628,
+    "signature": {
+        "r": "0x4fa4d991aa03c8421272ec90945e0212bf7e441c3a58a5b7e52f4d0694de38cb",
+        "s": "0x63170a8e07de1f19fa92822552151dae754bcc02992a583fda3c869ab79e5c12",
+        "v": 27
+    },
+    "vaultAddress": null
+}
