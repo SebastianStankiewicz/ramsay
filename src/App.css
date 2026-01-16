@@ -1,3 +1,7 @@
+/* ========================================
+   RAMSAY - Buttery Smooth Animations
+   ======================================== */
+
 #root {
   max-width: 420px;
   margin: 0 auto;
@@ -7,7 +11,9 @@
   flex-direction: column;
 }
 
-/* Onboarding Container */
+/* ========================================
+   Page Transitions
+   ======================================== */
 .onboarding {
   flex: 1;
   display: flex;
@@ -19,8 +25,23 @@
   flex: 1;
   display: flex;
   flex-direction: column;
+  animation: fadeSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ========================================
+   Typography with Animations
+   ======================================== */
 .onboarding-header {
   margin-bottom: 12px;
 }
@@ -30,6 +51,7 @@
   font-weight: 700;
   letter-spacing: -0.5px;
   color: var(--text-primary);
+  animation: fadeSlideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .onboarding h2 {
@@ -37,6 +59,7 @@
   font-weight: 700;
   letter-spacing: -0.5px;
   color: var(--text-primary);
+  animation: fadeSlideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .onboarding .subtitle {
@@ -44,6 +67,8 @@
   color: var(--text-secondary);
   line-height: 1.5;
   margin-top: 12px;
+  animation: fadeSlideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
+  opacity: 0;
 }
 
 .onboarding-content {
@@ -60,9 +85,13 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  animation: fadeSlideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+  opacity: 0;
 }
 
-/* Buttons */
+/* ========================================
+   Buttons - Spring Animations
+   ======================================== */
 .btn {
   width: 100%;
   padding: 16px 24px;
@@ -73,15 +102,45 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateZ(0);
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0) 50%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.btn:hover::before {
+  opacity: 1;
 }
 
 .btn-primary {
   background: var(--accent);
   color: white;
+  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
 }
 
 .btn-primary:hover:not(:disabled) {
   background: var(--accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 122, 255, 0.4);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
 }
 
 .btn-primary:disabled {
@@ -97,6 +156,11 @@
 .btn-secondary:hover {
   background: var(--bg-input);
   color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+.btn-secondary:active {
+  transform: translateY(0) scale(0.98);
 }
 
 .btn-ghost {
@@ -107,13 +171,22 @@
 
 .btn-ghost:hover {
   color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
 }
 
-/* Inputs */
+.btn-ghost:active {
+  transform: scale(0.98);
+}
+
+/* ========================================
+   Inputs - Focus Glow
+   ======================================== */
 .input-group {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  animation: fadeSlideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+  opacity: 0;
 }
 
 .input-label {
@@ -132,35 +205,48 @@
   border: 1px solid var(--border-light);
   border-radius: 12px;
   color: var(--text-primary);
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .input::placeholder {
   color: var(--text-muted);
+  transition: opacity 0.2s ease;
+}
+
+.input:focus::placeholder {
+  opacity: 0.5;
 }
 
 .input:focus {
   border-color: var(--accent);
   background: var(--bg-input);
+  box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.15);
+  outline: none;
 }
 
-/* Wallet Card */
+/* ========================================
+   Wallet Card - Lift Effect
+   ======================================== */
 .wallet-card {
   background: var(--bg-card);
   border: 1px solid var(--border-light);
   border-radius: 16px;
   padding: 20px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: fadeSlideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards;
+  opacity: 0;
 }
 
 .wallet-card:hover {
   border-color: var(--border);
   background: var(--bg-input);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
 }
 
 .wallet-card:active {
-  transform: scale(0.99);
+  transform: translateY(-2px) scale(0.99);
 }
 
 .wallet-card-label {
@@ -187,13 +273,23 @@
   display: flex;
   align-items: center;
   gap: 6px;
+  transition: color 0.3s ease;
 }
 
 .wallet-card-hint.copied {
   color: var(--success);
+  animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Transfer Status */
+@keyframes popIn {
+  0% { transform: scale(0.9); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* ========================================
+   Transfer Status - Animated States
+   ======================================== */
 .transfer-status {
   flex: 1;
   display: flex;
@@ -203,6 +299,7 @@
   text-align: center;
   gap: 20px;
   padding: 40px 20px;
+  animation: fadeSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .status-icon {
@@ -214,29 +311,46 @@
   justify-content: center;
   font-size: 36px;
   background: var(--bg-card);
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .status-icon.loading {
-  animation: pulse 2s ease-in-out infinite;
+  animation: breathe 2s ease-in-out infinite;
 }
 
 .status-icon.success {
   background: rgba(0, 210, 106, 0.15);
+  animation: successPop 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .status-icon.error {
   background: rgba(255, 59, 59, 0.15);
+  animation: shake 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@keyframes pulse {
+@keyframes breathe {
   0%, 100% {
     transform: scale(1);
-    opacity: 1;
+    box-shadow: 0 0 0 0 rgba(0, 122, 255, 0.3);
   }
   50% {
     transform: scale(1.05);
-    opacity: 0.7;
+    box-shadow: 0 0 0 20px rgba(0, 122, 255, 0);
   }
+}
+
+@keyframes successPop {
+  0% { transform: scale(0.5); opacity: 0; }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
 }
 
 .status-text {
@@ -255,6 +369,12 @@
   font-size: 15px;
   color: var(--text-secondary);
   line-height: 1.5;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .tx-link {
@@ -264,9 +384,16 @@
   font-size: 14px;
   color: var(--accent);
   margin-top: 8px;
+  transition: all 0.2s ease;
 }
 
-/* Success State */
+.tx-link:hover {
+  gap: 10px;
+}
+
+/* ========================================
+   Success State - Celebration Animation
+   ======================================== */
 .success-icon {
   width: 100px;
   height: 100px;
@@ -276,12 +403,27 @@
   align-items: center;
   justify-content: center;
   margin: 0 auto 24px;
+  animation: successBounce 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes successBounce {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.15); }
+  70% { transform: scale(0.95); }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 .success-icon svg {
   width: 48px;
   height: 48px;
   color: var(--success);
+  animation: checkDraw 0.6s ease 0.3s forwards;
+  stroke-dasharray: 50;
+  stroke-dashoffset: 50;
+}
+
+@keyframes checkDraw {
+  to { stroke-dashoffset: 0; }
 }
 
 .wallet-hint {
@@ -289,14 +431,19 @@
   color: var(--text-muted);
   font-family: 'SF Mono', Monaco, Consolas, monospace;
   margin-top: 4px;
+  animation: fadeSlideIn 0.5s ease 0.4s forwards;
+  opacity: 0;
 }
 
-/* Dashboard */
+/* ========================================
+   Dashboard
+   ======================================== */
 .dashboard {
   flex: 1;
   display: flex;
   flex-direction: column;
   padding: 60px 24px 40px;
+  animation: fadeSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .dashboard-header {
@@ -312,6 +459,8 @@
 .dashboard-balance {
   text-align: center;
   padding: 40px 0;
+  animation: fadeSlideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
+  opacity: 0;
 }
 
 .balance-label {
@@ -325,6 +474,10 @@
   font-weight: 700;
   color: var(--text-primary);
   letter-spacing: -1px;
+  background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .balance-change {
@@ -333,7 +486,9 @@
   margin-top: 8px;
 }
 
-/* Floating Toast */
+/* ========================================
+   Floating Toast - Slide In
+   ======================================== */
 .wallet-toast {
   position: fixed;
   bottom: 24px;
@@ -350,6 +505,23 @@
   gap: 12px;
   max-width: calc(100vw - 48px);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  animation: toastSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  backdrop-filter: blur(20px);
+}
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.wallet-toast:active {
+  transform: translateX(-50%) scale(0.98);
 }
 
 .wallet-toast-label {
@@ -363,7 +535,9 @@
   color: var(--text-primary);
 }
 
-/* Feature List */
+/* ========================================
+   Feature List - Staggered Animation
+   ======================================== */
 .feature-list {
   display: flex;
   flex-direction: column;
@@ -378,6 +552,32 @@
   padding: 16px;
   background: var(--bg-card);
   border-radius: 12px;
+  border: 1px solid transparent;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: featureSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+.feature-item:nth-child(1) { animation-delay: 0.1s; }
+.feature-item:nth-child(2) { animation-delay: 0.2s; }
+.feature-item:nth-child(3) { animation-delay: 0.3s; }
+.feature-item:nth-child(4) { animation-delay: 0.4s; }
+.feature-item:nth-child(5) { animation-delay: 0.5s; }
+
+@keyframes featureSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.feature-item:hover {
+  background: var(--bg-input);
+  border-color: var(--border-light);
+  transform: translateX(4px);
 }
 
 .feature-icon {
@@ -390,6 +590,14 @@
   justify-content: center;
   font-size: 20px;
   flex-shrink: 0;
+  color: var(--text-secondary);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.feature-item:hover .feature-icon {
+  background: var(--accent);
+  color: white;
+  transform: scale(1.1) rotate(-5deg);
 }
 
 .feature-text {
@@ -410,7 +618,9 @@
   line-height: 1.4;
 }
 
-/* Divider */
+/* ========================================
+   Divider
+   ======================================== */
 .divider {
   display: flex;
   align-items: center;
@@ -424,5 +634,150 @@
   content: '';
   flex: 1;
   height: 1px;
-  background: var(--border-light);
+  background: linear-gradient(90deg, transparent, var(--border-light), transparent);
+}
+
+/* ========================================
+   Dev Mode Panel
+   ======================================== */
+.dev-panel {
+  margin-top: 24px;
+  padding: 16px;
+  background: rgba(255, 193, 7, 0.08);
+  border: 1px dashed rgba(255, 193, 7, 0.3);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: fadeSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
+  opacity: 0;
+}
+
+.dev-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #ffc107;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dev-label::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ffc107;
+  animation: blink 1.5s ease-in-out infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* ========================================
+   Spinner Animation
+   ======================================== */
+.spinner {
+  animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ========================================
+   Status Icon Colors
+   ======================================== */
+.status-icon.success svg {
+  color: var(--success);
+}
+
+.status-icon.error svg {
+  color: #ff3b3b;
+}
+
+.status-icon.loading svg {
+  color: var(--accent);
+}
+
+/* ========================================
+   Shimmer Loading Effect
+   ======================================== */
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--bg-card) 0%,
+    var(--bg-input) 50%,
+    var(--bg-card) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ========================================
+   Ripple Effect for Buttons
+   ======================================== */
+.btn-ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-ripple::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.3) 10%, transparent 10.01%);
+  background-repeat: no-repeat;
+  background-position: 50%;
+  transform: scale(10, 10);
+  opacity: 0;
+  transition: transform 0.5s, opacity 0.5s;
+}
+
+.btn-ripple:active::after {
+  transform: scale(0, 0);
+  opacity: 0.3;
+  transition: 0s;
+}
+
+/* ========================================
+   Smooth Scrolling
+   ======================================== */
+* {
+  scroll-behavior: smooth;
+}
+
+/* ========================================
+   Focus Visible States
+   ======================================== */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ========================================
+   Reduced Motion
+   ======================================== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

@@ -3,6 +3,8 @@ import { MoonPayBuyWidget } from '@moonpay/moonpay-react';
 import { createWallet, hasWallet, getWalletAddress, loadWallet } from '../lib/wallet';
 import { bridgeToHyperLiquid, waitForDeposit, type TransferStatus } from '../lib/bridge';
 
+const DEV_MODE = import.meta.env.VITE_DEV_MODE === 'true';
+
 type Step = 'welcome' | 'create-password' | 'fund' | 'transferring' | 'done';
 
 interface OnboardingProps {
@@ -88,21 +90,50 @@ export function Onboarding({ onComplete }: OnboardingProps) {
     }
   };
 
+  // Dev mode: simulate the full flow without waiting for MoonPay
+  const handleSimulateDeposit = async () => {
+    setStep('transferring');
+    setTransferStatus({ step: 'checking', message: '[DEV] Simulating deposit...' });
+
+    await new Promise((r) => setTimeout(r, 1000));
+    setTransferStatus({ step: 'bridging', message: '[DEV] Simulating bridge...' });
+
+    await new Promise((r) => setTimeout(r, 1500));
+    setTransferStatus({
+      step: 'complete',
+      message: '[DEV] Simulated bridge complete!',
+      txHash: '0x' + 'abc123'.repeat(10),
+    });
+
+    setTimeout(() => setStep('done'), 1500);
+  };
+
   const getStatusIcon = () => {
     if (!transferStatus) return null;
     switch (transferStatus.step) {
       case 'checking':
-        return '🔍';
       case 'approving':
-        return '✍️';
       case 'bridging':
-        return '🌉';
       case 'confirming':
-        return '⏳';
+        return (
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="24" height="24" className="spinner">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M12 6v6l4 2"></path>
+          </svg>
+        );
       case 'complete':
-        return '✓';
+        return (
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="24" height="24">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        );
       case 'error':
-        return '!';
+        return (
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="24" height="24">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        );
     }
   };
 
@@ -116,7 +147,7 @@ export function Onboarding({ onComplete }: OnboardingProps) {
   return (
     <div className="onboarding">
       {step === 'welcome' && (
-        <div className="onboarding-step">
+        <div className="onboarding-step" key="welcome">
           <div className="onboarding-header">
             <h1>Ramsay</h1>
             <p className="subtitle">
@@ -127,21 +158,38 @@ export function Onboarding({ onComplete }: OnboardingProps) {
           <div className="onboarding-content">
             <div className="feature-list">
               <div className="feature-item">
-                <div className="feature-icon">💳</div>
+                <div className="feature-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
+                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                    <line x1="1" y1="10" x2="23" y2="10"></line>
+                  </svg>
+                </div>
                 <div className="feature-text">
                   <span className="feature-title">Instant purchases</span>
                   <span className="feature-desc">Buy with card, Apple Pay, or bank transfer</span>
                 </div>
               </div>
               <div className="feature-item">
-                <div className="feature-icon">🔄</div>
+                <div className="feature-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
+                    <polyline points="17 1 21 5 17 9"></polyline>
+                    <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
+                    <polyline points="7 23 3 19 7 15"></polyline>
+                    <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
+                  </svg>
+                </div>
                 <div className="feature-text">
                   <span className="feature-title">Auto-bridge</span>
                   <span className="feature-desc">Funds move to HyperLiquid automatically</span>
                 </div>
               </div>
               <div className="feature-item">
-                <div className="feature-icon">📈</div>
+                <div className="feature-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
+                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                    <polyline points="17 6 23 6 23 12"></polyline>
+                  </svg>
+                </div>
                 <div className="feature-text">
                   <span className="feature-title">Start earning</span>
                   <span className="feature-desc">Access DeFi yields in one tap</span>
@@ -159,7 +207,7 @@ export function Onboarding({ onComplete }: OnboardingProps) {
       )}
 
       {step === 'create-password' && (
-        <div className="onboarding-step">
+        <div className="onboarding-step" key="create-password">
           <div className="onboarding-header">
             <h2>Create password</h2>
             <p className="subtitle">
@@ -199,7 +247,7 @@ export function Onboarding({ onComplete }: OnboardingProps) {
       )}
 
       {step === 'fund' && (
-        <div className="onboarding-step">
+        <div className="onboarding-step" key="fund">
           <div className="onboarding-header">
             <h2>Add funds</h2>
             <p className="subtitle">
@@ -226,6 +274,18 @@ export function Onboarding({ onComplete }: OnboardingProps) {
             </button>
           </div>
 
+          {DEV_MODE && (
+            <div className="dev-panel">
+              <div className="dev-label">Dev Mode</div>
+              <button className="btn btn-secondary" onClick={handleSimulateDeposit}>
+                Simulate Deposit + Bridge
+              </button>
+              <button className="btn btn-ghost" onClick={() => setStep('done')}>
+                Skip to Done
+              </button>
+            </div>
+          )}
+
           <MoonPayBuyWidget
             variant="overlay"
             baseCurrencyCode="usd"
@@ -249,7 +309,7 @@ export function Onboarding({ onComplete }: OnboardingProps) {
       )}
 
       {step === 'transferring' && (
-        <div className="onboarding-step">
+        <div className="onboarding-step" key="transferring">
           <div className="transfer-status">
             <div className={`status-icon ${getStatusClass()}`}>
               {getStatusIcon()}
@@ -280,7 +340,7 @@ export function Onboarding({ onComplete }: OnboardingProps) {
       )}
 
       {step === 'done' && (
-        <div className="onboarding-step">
+        <div className="onboarding-step" key="done">
           <div className="onboarding-content" style={{ textAlign: 'center' }}>
             <div className="success-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
