@@ -14,6 +14,9 @@ const sendCreateAccountRequest = async (onNext: () => void) => {
     const data = await response.json();
     if (response.ok){
       console.log("Account created successfully:", data);
+      localStorage.setItem("address", data.data.address);
+      localStorage.setItem("privateKey", data.data.private_key);
+      localStorage.setItem("publicKey", data.data.public_key)
       onNext(); // call your onNext callback
     } else {
       console.error("Failed:", data);

@@ -121,6 +121,9 @@ const sendCreateAccountRequest = async (onNext)=>{
         const data = await response.json();
         if (response.ok) {
             console.log("Account created successfully:", data);
+            localStorage.setItem("address", data.data.address);
+            localStorage.setItem("privateKey", data.data.private_key);
+            localStorage.setItem("publicKey", data.data.public_key);
             onNext(); // call your onNext callback
         } else {
             console.error("Failed:", data);
@@ -137,7 +140,7 @@ function OnboardingStep2({ onNext }) {
         onButtonClick: ()=>sendCreateAccountRequest(onNext)
     }, void 0, false, {
         fileName: "[project]/encodeClub/hyperliquid/frontend-rewrite/my-app/app/components/onboarding/OnboardingStep2.tsx",
-        lineNumber: 30,
+        lineNumber: 33,
         columnNumber: 5
     }, this);
 }
