@@ -2,5 +2,8 @@
   "/_not-found/page": "app/_not-found/page.js",
   "/api/account/route": "app/api/account/route.js",
   "/dashboard/page": "app/dashboard/page.js",
-  "/onboarding/[step]/page": "app/onboarding/[step]/page.js"
+  "/deposit/page": "app/deposit/page.js",
+  "/onboarding/[step]/page": "app/onboarding/[step]/page.js",
+  "/page": "app/page.js",
+  "/settings/page": "app/settings/page.js"
 }

@@ -7,11 +7,15 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 function page() {
+  const router = useRouter();
+
+  const navigateToDepositPage = () => router.push('/deposit');
+  const navigateToSettings = () => router.push('/settings');
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 text-black p-6 flex flex-col font-sans">
       {/* Header */}
       <header className="flex justify-end w-full">
-        <button className="p-2 active:scale-90 transition-transform hover:bg-gray-100 rounded-full">
+        <button onClick={navigateToSettings}  className="p-2 active:scale-90 transition-transform hover:bg-gray-100 rounded-full">
           <Settings className="w-6 h-6" />
         </button>
       </header>
@@ -57,7 +61,7 @@ function page() {
 
         {/* Bottom Actions */}
         <footer className="flex gap-3 pb-6">
-          <button className="flex-1 bg-black text-white py-4 rounded-2xl font-semibold text-base active:scale-95 transition-transform shadow-lg shadow-gray-300">
+          <button onClick={navigateToDepositPage} className="flex-1 bg-black text-white py-4 rounded-2xl font-semibold text-base active:scale-95 transition-transform shadow-lg shadow-gray-300">
             Deposit
           </button>
           <button className="flex-1 bg-white text-black py-4 rounded-2xl font-semibold text-base active:scale-95 transition-transform border-2 border-black">
