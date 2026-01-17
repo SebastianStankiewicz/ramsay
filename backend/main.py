@@ -28,37 +28,55 @@ print(user_state)
 
 #Takes a user object - will use lifi to swap this ether on eth to hyperliquid EVM eth
 #Gives the user USDC on hyperliquid
-def bridgeViaLifi(user_address: str, amount_wei: str):
+def bridgeViaLifi(user_address: str, amount_wei: str, to_address: str = None):
     """
     Get a quote from Li.Fi for bridging ETH from Ethereum to HyperLiquid.
+    Based on Li.Fi API documentation: https://docs.li.fi/api-reference/get-a-quote-for-a-token-transfer
     
     Args:
-        user_address: User's Ethereum address
-        amount_wei: Amount in wei (as string)
+        user_address: User's Ethereum address (fromAddress)
+        amount_wei: Amount in wei as string (fromAmount with all decimals)
+        to_address: Receiving address (optional, defaults to fromAddress)
     
     Returns:
-        Quote/route from Li.Fi API
+        Quote/step object from Li.Fi API
     """
     # Li.Fi API base URL
     LIFI_API_URL = "https://li.quest/v1"
     
-    # Chain IDs: Ethereum = 1, HyperLiquid = 998
-    # Token addresses: Native ETH = 0x0000000000000000000000000000000000000000
+    # If toAddress not provided, use fromAddress
+    if to_address is None:
+        to_address = user_address
+    
+    # Query parameters according to Li.Fi API docs
     params = {
-        "fromChain": "1",  # Ethereum
-        "toChain": "998",  # HyperLiquid
-        "fromToken": "0x0000000000000000000000000000000000000000",  # Native ETH
-        "toToken": "0x0000000000000000000000000000000000000000",  # Native ETH
-        "fromAmount": amount_wei,
-        "fromAddress": user_address,
-        "toAddress": user_address,
-        "slippage": "0.03"  # 3% slippage
+        "fromChain": "1",  # Ethereum - can be chain id or chain key
+        "toChain": "999",  # HyperLiquid - chain id 999 (not 998)
+        "fromToken": "0x0000000000000000000000000000000000000000",  # Native ETH - can be address or symbol
+        "toToken": "0x0000000000000000000000000000000000000000",  # Native ETH - can be address or symbol
+        "fromAddress": user_address,  # Required
+        "toAddress": to_address,  # Optional, defaults to fromAddress if not provided
+        "fromAmount": amount_wei,  # Required - amount with all decimals
+        "slippage": 0.03,  # 3% slippage as decimal (0.03 = 3%)
+        "integrator": "ramsay"  # Tracking information
     }
     
-    response = requests.get(f"{LIFI_API_URL}/quote", params=params)
-    response.raise_for_status()
-    
-    return response.json()
+    try:
+        response = requests.get(f"{LIFI_API_URL}/quote", params=params, timeout=10)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.HTTPError as e:
+        # Return more detailed error information
+        error_msg = f"Li.Fi API error: {e.response.status_code}"
+        if e.response.text:
+            try:
+                error_data = e.response.json()
+                error_msg += f" - {error_data}"
+            except:
+                error_msg += f" - {e.response.text[:200]}"
+        raise Exception(error_msg)
+    except Exception as e:
+        raise Exception(f"Li.Fi request failed: {str(e)}")
 
 #Will take the USDC and put into the spot wallet
 def convertEvmToSpot(user_address: str, private_key: str, usd_amount: float):
