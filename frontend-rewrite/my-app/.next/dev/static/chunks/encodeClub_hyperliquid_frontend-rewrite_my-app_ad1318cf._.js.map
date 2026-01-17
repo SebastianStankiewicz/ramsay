@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///Users/sebastianstankiewicz/encodeClub/hyperliquid/frontend-rewrite/my-app/app/page.tsx"],"sourcesContent":["\"use client\";\n\nimport Image from \"next/image\";\nimport { Settings } from \"lucide-react\";\nimport { useState } from \"react\";\nimport { useRouter } from \"next/navigation\";\n\nexport default function Home() {\n  const [showOnboarding, setShowOnBoarding] = useState(true);\n  const [onboardingStage, setOnBoardingStage] = useState(1);\n  const router = useRouter();\n\n\n  if (showOnboarding){\n    router.push(`/onboarding/${1}/`)\n  } else{\n    router.push('/dashboard');\n  }\n\n\n}"],"names":[],"mappings":";;;;AAIA;AACA;;AALA;;;AAOe,SAAS;;IACtB,MAAM,CAAC,gBAAgB,kBAAkB,GAAG,IAAA,0OAAQ,EAAC;IACrD,MAAM,CAAC,iBAAiB,mBAAmB,GAAG,IAAA,0OAAQ,EAAC;IACvD,MAAM,SAAS,IAAA,mNAAS;IAGxB,IAAI,gBAAe;QACjB,OAAO,IAAI,CAAC,CAAC,YAAY,EAAE,EAAE,CAAC,CAAC;IACjC,OAAM;QACJ,OAAO,IAAI,CAAC;IACd;AAGF;GAbwB;;QAGP,mNAAS;;;KAHF"}},
+    {"offset": {"line": 39, "column": 0}, "map": {"version":3,"sources":["file:///Users/sebastianstankiewicz/encodeClub/hyperliquid/frontend-rewrite/my-app/node_modules/next/navigation.js"],"sourcesContent":["module.exports = require('./dist/client/components/navigation')\n"],"names":[],"mappings":"AAAA,OAAO,OAAO","ignoreList":[0]}}]
+}

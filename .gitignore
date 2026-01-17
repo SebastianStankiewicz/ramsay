@@ -26,3 +26,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+./frontend-rewrite/my-app/package-lock.json
+
+./frontend-rewrite/my-app/.next/*
+.next/
