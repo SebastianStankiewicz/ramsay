@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Settings, Plus, TrendingUp, ArrowUpRight } from "lucide-react";
+import { Settings, Plus, TrendingUp, ArrowUpRight, BookOpen } from "lucide-react";
 import { formatCurrency } from "@/app/utils/formatCurrency";
 import { SkeletonCard } from "@/app/components/SkeletonLoader";
 
@@ -55,12 +55,20 @@ export default function DashboardPage() {
       {/* Header */}
       <header className="flex justify-between items-center px-6 pt-12 pb-6 bg-white/80 backdrop-blur-xl sticky top-0 z-20 border-b border-[#E8ECF1]/50">
         <h1 className="text-2xl font-archivo-black text-[#0A2540]">Ramsay</h1>
-        <button
-          onClick={() => router.push('/settings')}
-          className="p-2 hover:bg-[#F5F7FA] rounded-full transition-all duration-200 active:scale-95"
-        >
-          <Settings className="w-6 h-6 text-[#6B7C93]" />
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => router.push('/history')}
+            className="p-2 hover:bg-[#F5F7FA] rounded-full transition-all duration-200 active:scale-95"
+          >
+            <BookOpen className="w-6 h-6 text-[#6B7C93]" />
+          </button>
+          <button
+            onClick={() => router.push('/settings')}
+            className="p-2 hover:bg-[#F5F7FA] rounded-full transition-all duration-200 active:scale-95"
+          >
+            <Settings className="w-6 h-6 text-[#6B7C93]" />
+          </button>
+        </div>
       </header>
 
       {/* Main Content */}

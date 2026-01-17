@@ -9,6 +9,11 @@ import eth_account
 from eth_account.signers.local import LocalAccount
 from web3 import Web3
 from User import *
+import sqlite3
+from walletDB import *
+
+
+walletDB = WalletDB("testing.db")
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -26,6 +31,7 @@ info = Info(constants.MAINNET_API_URL, skip_ws=True)
 
 user_state = info.user_state("0xD5Bf397b557c03814b2eF5272CCb06114DC2eb8D")
 print(user_state)
+
 
 #Takes a user object - will use lifi to swap this ether on eth to hyperliquid EVM eth
 #Gives the user USDC on hyperliquid
@@ -223,14 +229,32 @@ def depositToVault(user_address: str, private_key: str, vault_address: str, usd_
 def create_app():
     app = Flask(__name__)
     app.config["DEBUG"] = os.getenv("FLASK_DEBUG", "true").lower() == "true"
+    
+    # Enable CORS for all routes
+    @app.after_request
+    def after_request(response):
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+        return response
+    
+    # Handle preflight OPTIONS requests
+    @app.before_request
+    def handle_preflight():
+        if request.method == "OPTIONS":
+            response = jsonify({})
+            response.headers.add('Access-Control-Allow-Origin', '*')
+            response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+            response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+            return response
 
     @app.route("/createAccount", methods=["POST"])
     def createAccount():
         #Will create a user account
         #User account will then have its wallet key pair created etc
         user = User()
-        user.createKeyPair()
-        
+        wallet = user.createKeyPair()
+        walletDB.create_user(wallet['private_key'], wallet['public_key'], wallet['address'])
         return jsonify({"status": "ok", "message": "Account created", "data": user.getWalletDetails()})
 
     @app.route("/deposit")
@@ -263,6 +287,32 @@ def create_app():
         try:
             # Get quote and execute bridge in one step
             result = bridgeViaLifiAndExecute(user_address, private_key, amount_wei, to_address)
+            
+            # Log transaction to database
+            try:
+                quote = result.get("quote", {})
+                action = quote.get("action", {})
+                from_token = action.get("fromToken", {}).get("symbol", "ETH")
+                to_token = action.get("toToken", {}).get("symbol", "HYPE")
+                estimate = quote.get("estimate", {})
+                amount_usd = float(estimate.get("fromAmountUSD", 0)) if estimate.get("fromAmountUSD") else None
+                
+                walletDB.add_transaction(
+                    user_address=user_address,
+                    tx_type="bridge",
+                    tx_hash=result.get("txHash"),
+                    status="pending",
+                    from_chain=str(action.get("fromChainId", "1")),
+                    to_chain=str(action.get("toChainId", "999")),
+                    from_token=from_token,
+                    to_token=to_token,
+                    amount_wei=amount_wei,
+                    amount_usd=amount_usd,
+                    metadata={"quote": quote}
+                )
+            except Exception as log_error:
+                print(f"Failed to log transaction: {log_error}")
+            
             return jsonify({
                 "status": "ok",
                 "message": result["message"],
@@ -298,13 +348,56 @@ def create_app():
         
         try:
             result = depositToVault(user_address, private_key, vault_address, float(usd_amount))
+            
+            # Log transaction to database
+            try:
+                tx_hash = result.get("txHash") or result.get("response", {}).get("txHash") if isinstance(result, dict) else None
+                walletDB.add_transaction(
+                    user_address=user_address,
+                    tx_type="vault_deposit",
+                    tx_hash=tx_hash,
+                    status="completed",
+                    amount_usd=float(usd_amount),
+                    vault_address=vault_address,
+                    metadata={"result": result}
+                )
+            except Exception as log_error:
+                print(f"Failed to log transaction: {log_error}")
+            
             return jsonify({"status": "ok", "message": "Deposit successful", "data": result})
         except Exception as e:
             return jsonify({
                 "status": "error",
                 "message": str(e)
             }), 500
-
+    
+    @app.route("/getTransactionHistory", methods=["GET"])
+    def getTransactionHistoryRoute():
+        """
+        Get transaction history for a user.
+        Query params: userAddress (required), limit (optional, default 50)
+        """
+        user_address = request.args.get("userAddress")
+        limit = request.args.get("limit", 50, type=int)
+        
+        if not user_address:
+            return jsonify({
+                "status": "error",
+                "message": "Missing required parameter: userAddress"
+            }), 400
+        
+        try:
+            transactions = walletDB.get_transaction_history(user_address, limit)
+            return jsonify({
+                "status": "ok",
+                "message": "Transaction history retrieved",
+                "data": transactions
+            })
+        except Exception as e:
+            return jsonify({
+                "status": "error",
+                "message": str(e)
+            }), 500
 
     return app
 if __name__ == "__main__":

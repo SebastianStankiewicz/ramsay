@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Copy, Check, Eye, EyeOff, Download, Shield, Network, Info, Wallet } from "lucide-react";
+import { ArrowLeft, Copy, Check, Eye, EyeOff, Download, Shield, Network, Info, Wallet, History } from "lucide-react";
 import { formatCurrency } from "@/app/utils/formatCurrency";
 import { getWalletAddress, getPrivateKey } from "@/app/lib/wallet";
 
@@ -168,6 +168,30 @@ export default function SettingsPage() {
             <div>
               <p className="text-[#6B7C93] text-xs font-medium mb-1">Chain ID</p>
               <p className="text-[#0A2540] text-sm font-archivo-black font-mono">999</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Transaction History Section */}
+        <div className="bg-white rounded-2xl p-5 shadow-sm card-hover">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-10 h-10 rounded-xl bg-[#0075FF]/10 flex items-center justify-center">
+              <History className="w-5 h-5 text-[#0075FF]" />
+            </div>
+            <h3 className="text-lg font-archivo-black text-[#0A2540]">Transaction History</h3>
+          </div>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-[#6B7C93] text-xs font-medium mb-1">View all transactions</p>
+                <p className="text-[#6B7C93] text-xs">Bridge, deposits, and more</p>
+              </div>
+              <button
+                onClick={() => router.push('/history')}
+                className="px-4 py-2 bg-[#0075FF] text-white rounded-xl text-sm font-semibold hover:bg-[#0065E0] transition-colors"
+              >
+                View History
+              </button>
             </div>
           </div>
         </div>

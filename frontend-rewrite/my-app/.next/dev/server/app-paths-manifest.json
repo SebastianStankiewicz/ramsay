@@ -1,7 +1,11 @@
 {
   "/api/account/route": "app/api/account/route.js",
+  "/api/deposit/route": "app/api/deposit/route.js",
   "/api/vault/route": "app/api/vault/route.js",
   "/dashboard/page": "app/dashboard/page.js",
+  "/deposit/page": "app/deposit/page.js",
+  "/history/page": "app/history/page.js",
   "/onboarding/[step]/page": "app/onboarding/[step]/page.js",
+  "/page": "app/page.js",
   "/settings/page": "app/settings/page.js"
 }
