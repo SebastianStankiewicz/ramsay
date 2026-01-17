@@ -1,42 +1,38 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-//FOR DEPOSITiNG To THE VAULT
 export async function POST(request: NextRequest) {
     try {
+        // 1. Get the data exactly as sent from page.tsx (camelCase)
+        const body = await request.json();
+        const { userAddress, privateKey, vaultAddress, amount } = body;
 
-        const response = await fetch("http://127.0.0.1:5069/deposit", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ usdAmount: 100 })
+        // DEBUG LOG - Check your terminal running Next.js to see this!
+        console.log("Next.js Proxy received:", body);
+
+        // 2. Map camelCase (JS) to snake_case (Python Flask)
+        const response = await fetch("http://127.0.0.1:5069/depositToVault", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            userAddress: userAddress,
+            privateKey: privateKey,
+            vaultAddress: vaultAddress,
+            amount: amount
+          })
         });
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            return new Response(errorText, { status: response.status });
-        }
 
         const result = await response.json();
 
-        const setCookieHeader = response.headers.get("set-cookie");
-
-        const nextResponse = new Response(JSON.stringify(result), {
-            status: 200,
-            headers: { "Content-Type": "application/json" }
-        });
-
-        if (setCookieHeader) {
-            console.log("Cookie:", setCookieHeader); 
-            nextResponse.headers.set("Set-Cookie", setCookieHeader);
+        if (!response.ok) {
+            return NextResponse.json(result, { status: response.status });
         }
-        return nextResponse;
+
+        return NextResponse.json(result);
 
     } catch (error) {
         console.error("NextJS Proxy Error:", error);
-        return new Response(JSON.stringify({ error: "Internal Proxy Error" }), { 
-            status: 500, 
-            headers: { "Content-Type": "application/json" }
-        });
+        return NextResponse.json({ error: "Internal Proxy Error" }, { status: 500 });
     }
 }

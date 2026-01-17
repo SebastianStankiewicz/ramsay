@@ -1,17 +1,55 @@
 "use client";
 import { useState } from "react";
-import { X, Apple } from "lucide-react";
-
+import { X, Apple, FileQuestionMark } from "lucide-react";
+import { useRouter } from "next/navigation";
 export default function Deposit() {
+  const router = useRouter();
   const [amount, setAmount] = useState(0);
 
   const quickAmounts = [10, 25, 50, 75, 100];
+  const navigateToDashboard = () => router.push('/dashboard');
+  const depositToVault = async () => {
+    try {
+      const userAddress = localStorage.getItem("publicKey");
+      const privateKey = localStorage.getItem("privateKey");
+      const vaultAddress = "0x1e37a337ed460039d1b15bd3bc489de789768d5e"; // hardcoded safe vault
+      const usdAmount = Number(amount);
+  
+      if (!userAddress || !privateKey || !vaultAddress || !usdAmount) {
+        console.error("Missing required fields for deposit");
+        return;
+      }
+  
+      const response = await fetch("/api/deposit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userAddress: userAddress,     // camelCase
+          privateKey: privateKey,       // camelCase
+          vaultAddress: vaultAddress,   // camelCase
+          amount: usdAmount             // matches Flask
+        }),
+      });
+  
+      const data = await response.json();
+      console.log("Deposit response:", data);
+  
+      if (response.ok) {
+        console.log("Deposit success!");
+      } else {
+        console.error("Deposit failed:", data);
+      }
+  
+    } catch (error) {
+      console.error("Error depositing to vault:", error);
+    }
+  };
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 p-6 flex flex-col">
       {/* Header */}
       <header className="flex justify-between items-center mb-12">
-        <button className="p-2 active:scale-90 transition-transform">
+        <button onClick={navigateToDashboard} className="p-2 active:scale-90 transition-transform">
           <X className="w-6 h-6" />
         </button>
         <h1 className="text-xl font-semibold">Deposit</h1>
@@ -64,9 +102,9 @@ export default function Deposit() {
       </div>
 
       {/* Apple Pay Button */}
-      <button className="w-full bg-black text-white py-5 rounded-2xl font-semibold text-lg active:scale-95 transition-transform flex items-center justify-center gap-2">
+      <button onClick={depositToVault} className="w-full bg-black text-white py-5 rounded-2xl font-semibold text-lg active:scale-95 transition-transform flex items-center justify-center gap-2">
         <span className="text-2xl"></span>
-        <Apple/>
+        <Apple />
         <span>Pay</span>
       </button>
     </main>

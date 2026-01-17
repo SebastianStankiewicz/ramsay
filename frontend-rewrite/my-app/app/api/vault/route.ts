@@ -1,15 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-//FOR GETTING ALL VAULT INFO - EG HOLDINGS AND CURRENT PNL
-export async function POST(request: NextRequest) {
+// FOR GETTING ALL VAULT INFO - EG HOLDINGS AND CURRENT PNL
+export async function GET(request: NextRequest) {
     try {
-
-        const response = await fetch("http://127.0.0.1:5069/deposit", {
-            method: "POST",
+        const response = await fetch("http://127.0.0.1:5069/getVaults", {
+            method: "GET",
             headers: {
                 "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ usdAmount: 100 })
+            }
         });
 
         if (!response.ok) {
@@ -30,6 +28,7 @@ export async function POST(request: NextRequest) {
             console.log("Cookie:", setCookieHeader); 
             nextResponse.headers.set("Set-Cookie", setCookieHeader);
         }
+
         return nextResponse;
 
     } catch (error) {
