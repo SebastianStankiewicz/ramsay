@@ -121,9 +121,11 @@ def bridgeViaLifiAndExecute(user_address: str, private_key: str, amount_wei: str
     
     # Sign transaction
     signed_txn = account.sign_transaction(tx)
+    # eth_account v0.10+ uses raw_transaction (snake_case); older used rawTransaction
+    raw_tx = getattr(signed_txn, "raw_transaction", None) or getattr(signed_txn, "rawTransaction")
     
     # Send transaction
-    tx_hash = w3.eth.send_raw_transaction(signed_txn.rawTransaction)
+    tx_hash = w3.eth.send_raw_transaction(raw_tx)
     
     return {
         "quote": quote,

@@ -1,13 +1,15 @@
 @import "tailwindcss";
 
 @layer base {
-  .font-balgin {
-    font-family: var(--font-balgin);
-    @apply tracking-wide;
+  .font-archivo-black {
+    font-family: 'Archivo Black', sans-serif;
   }
 }
 
 @layer base {
+  .font-balgin {
+    font-family: var(--font-bebas), sans-serif !important;
+  }
 
   :root {
     /* Revolut Color Palette */
@@ -95,6 +97,30 @@
     66% {
       transform: translateY(-5px) rotate(-1deg);
     }
+  }
+
+  /* Step-in: icon centered then moves left, text appears */
+  .animate-step-in .step-icon-col {
+    animation: step-icon-in 0.5s var(--ease-out) forwards;
+  }
+  .animate-step-in .step-text {
+    opacity: 0;
+    animation: step-text-in 0.4s var(--ease-out) forwards;
+  }
+  .step-1.animate-step-in .step-icon-col { animation-delay: 0s; }
+  .step-1.animate-step-in .step-text { animation-delay: 0.2s; }
+  .step-2.animate-step-in .step-icon-col { animation-delay: 0.35s; }
+  .step-2.animate-step-in .step-text { animation-delay: 0.55s; }
+  .step-3.animate-step-in .step-icon-col { animation-delay: 0.7s; }
+  .step-3.animate-step-in .step-text { animation-delay: 0.9s; }
+
+  @keyframes step-icon-in {
+    0% { margin-left: calc(50% - 1.5rem); }
+    100% { margin-left: 0; }
+  }
+  @keyframes step-text-in {
+    0% { opacity: 0; max-width: 0; overflow: hidden; }
+    100% { opacity: 1; max-width: none; overflow: visible; }
   }
 
   /* Fade animations */

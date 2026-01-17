@@ -109,14 +109,13 @@ export default function DepositPage() {
           >
             <ArrowLeft className="w-6 h-6 text-[#0A2540]" />
           </button>
-          <h1 className="flex-1 text-2xl font-bold text-[#0A2540] text-center -mr-10">Deposit</h1>
         </header>
 
         <div className="flex-1 flex flex-col justify-center px-6 py-8">
           {/* Amount Display */}
           <div className="text-center mb-12 animate-bounce-in">
             <div className="mb-4">
-              <span className="text-8xl font-bold text-[#0A2540] tabular-nums">
+              <span className="text-8xl font-archivo-black text-[#0A2540] tabular-nums">
                 ${Math.round(animatedAmount)}
               </span>
             </div>

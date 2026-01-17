@@ -89,7 +89,7 @@ export function Onboarding({ onComplete }: OnboardingProps) {
               </svg>
             </div>
             <h1 className="welcome-title">Ramsay</h1>
-            <p className="welcome-subtitle">High-yield savings, simplified</p>
+            <p className="welcome-subtitle">High-yield Ramsay, simplified</p>
           </div>
           <div className="welcome-footer">
             <button className="btn-primary" onClick={() => setStep('create-password')}>

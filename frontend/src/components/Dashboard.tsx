@@ -1,22 +1,22 @@
 import { useState } from 'react';
 import { formatCurrency } from '../utils/formatCurrency';
 import DepositModal from './modals/DepositModal';
-import SavingsModal from './modals/SavingsModal';
+import RamsayModal from './modals/RamsayModal';
 import pigImage from '../assets/pig.png';
 
 type DashboardProps = {
   balance: number;
-  savingsBalance: number;
+  RamsayBalance: number;
   showDepositModal: boolean;
-  showSavingsModal: boolean;
-  savingsAction: 'deposit' | 'withdraw';
+  showRamsayModal: boolean;
+  RamsayAction: 'deposit' | 'withdraw';
   modalAmount: string;
   onDepositModalClose: () => void;
-  onSavingsModalClose: () => void;
-  onOpenSavingsModal: (action: 'deposit' | 'withdraw') => void;
+  onRamsayModalClose: () => void;
+  onOpenRamsayModal: (action: 'deposit' | 'withdraw') => void;
   onModalAmountChange: (amount: string) => void;
   onAddMoney: () => void;
-  onSavingsAction: () => void;
+  onRamsayAction: () => void;
   onOpenSettings: () => void;
 };
 
@@ -29,17 +29,17 @@ type Piggybank = {
 
 export default function Dashboard({
   balance,
-  savingsBalance,
+  RamsayBalance,
   showDepositModal,
-  showSavingsModal,
-  savingsAction,
+  showRamsayModal,
+  RamsayAction,
   modalAmount,
   onDepositModalClose,
-  onSavingsModalClose,
-  onOpenSavingsModal,
+  onRamsayModalClose,
+  onOpenRamsayModal,
   onModalAmountChange,
   onAddMoney,
-  onSavingsAction,
+  onRamsayAction,
   onOpenSettings,
 }: DashboardProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -50,7 +50,7 @@ export default function Dashboard({
       id: '1',
       name: 'Growth Piggybank',
       apr: 12.5,
-      balance: savingsBalance || 0,
+      balance: RamsayBalance || 0,
     },
     {
       id: '2',
@@ -129,7 +129,7 @@ export default function Dashboard({
 
                     <button
                       className="piggybank-deposit-btn"
-                      onClick={() => onOpenSavingsModal('deposit')}
+                      onClick={() => onOpenRamsayModal('deposit')}
                     >
                       <span>Deposit</span>
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -169,15 +169,15 @@ export default function Dashboard({
         onAddMoney={onAddMoney}
       />
 
-      <SavingsModal
-        isOpen={showSavingsModal}
-        action={savingsAction}
+      <RamsayModal
+        isOpen={showRamsayModal}
+        action={RamsayAction}
         modalAmount={modalAmount}
         balance={balance}
-        savingsBalance={savingsBalance}
-        onClose={onSavingsModalClose}
+        RamsayBalance={RamsayBalance}
+        onClose={onRamsayModalClose}
         onAmountChange={onModalAmountChange}
-        onAction={onSavingsAction}
+        onAction={onRamsayAction}
       />
     </div>
   );

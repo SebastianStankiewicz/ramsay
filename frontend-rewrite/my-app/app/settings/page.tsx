@@ -47,28 +47,29 @@ export default function SettingsPage() {
   return (
     <main className="min-h-screen bg-[#F5F7FA] flex flex-col">
       {/* Header */}
-      <header className="flex items-center px-6 pt-12 pb-6 bg-white">
+      <header className="flex items-center px-6 pt-12 pb-6 bg-white/80 backdrop-blur-xl sticky top-0 z-20 border-b border-[#E8ECF1]/50">
         <button
           onClick={() => router.push('/dashboard')}
-          className="p-2 -ml-2 hover:bg-gray-100 rounded-full transition-colors"
+          className="p-2 -ml-2 hover:bg-[#F5F7FA] rounded-full transition-all duration-200 active:scale-95"
         >
           <ArrowLeft className="w-6 h-6 text-[#0A2540]" />
         </button>
-        <h1 className="flex-1 text-2xl font-bold text-[#0A2540] text-center -mr-10">Settings</h1>
       </header>
 
       <div className="flex-1 px-6 py-6 space-y-4 overflow-y-auto">
         {/* Wallet Section */}
-        <div className="bg-white rounded-2xl p-5 shadow-sm">
+        <div className="bg-white rounded-2xl p-5 shadow-sm card-hover">
           <div className="flex items-center gap-2 mb-4">
-            <Wallet className="w-5 h-5 text-[#0075FF]" />
-            <h3 className="text-lg font-bold text-[#0A2540]">Wallet</h3>
+            <div className="w-10 h-10 rounded-xl bg-[#0075FF]/10 flex items-center justify-center">
+              <Wallet className="w-5 h-5 text-[#0075FF]" />
+            </div>
+            <h3 className="text-lg font-archivo-black text-[#0A2540]">Wallet</h3>
           </div>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-[#6B7C93] text-xs font-medium mb-1">Wallet Address</p>
-                <p className="text-[#0A2540] text-sm font-semibold font-mono">{formatAddress(walletAddress)}</p>
+                <p className="text-[#0A2540] text-sm font-archivo-black font-mono">{formatAddress(walletAddress)}</p>
               </div>
               <button
                 onClick={() => copyToClipboard(walletAddress, 'address')}
@@ -84,16 +85,18 @@ export default function SettingsPage() {
             <div className="h-px bg-[#E8ECF1]" />
             <div>
               <p className="text-[#6B7C93] text-xs font-medium mb-1">Balance</p>
-              <p className="text-[#0A2540] text-lg font-bold">{formatCurrency(balance)}</p>
+              <p className="text-[#0A2540] text-lg font-archivo-black">{formatCurrency(balance)}</p>
             </div>
           </div>
         </div>
 
         {/* Security Section */}
-        <div className="bg-white rounded-2xl p-5 shadow-sm">
+        <div className="bg-white rounded-2xl p-5 shadow-sm card-hover">
           <div className="flex items-center gap-2 mb-4">
-            <Shield className="w-5 h-5 text-[#0075FF]" />
-            <h3 className="text-lg font-bold text-[#0A2540]">Security</h3>
+            <div className="w-10 h-10 rounded-xl bg-[#0075FF]/10 flex items-center justify-center">
+              <Shield className="w-5 h-5 text-[#0075FF]" />
+            </div>
+            <h3 className="text-lg font-archivo-black text-[#0A2540]">Security</h3>
           </div>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -143,16 +146,18 @@ export default function SettingsPage() {
         </div>
 
         {/* Network Section */}
-        <div className="bg-white rounded-2xl p-5 shadow-sm">
+        <div className="bg-white rounded-2xl p-5 shadow-sm card-hover">
           <div className="flex items-center gap-2 mb-4">
-            <Network className="w-5 h-5 text-[#0075FF]" />
-            <h3 className="text-lg font-bold text-[#0A2540]">Network</h3>
+            <div className="w-10 h-10 rounded-xl bg-[#0075FF]/10 flex items-center justify-center">
+              <Network className="w-5 h-5 text-[#0075FF]" />
+            </div>
+            <h3 className="text-lg font-archivo-black text-[#0A2540]">Network</h3>
           </div>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-[#6B7C93] text-xs font-medium mb-1">Network</p>
-                <p className="text-[#0A2540] text-sm font-semibold">Hyperliquid</p>
+                <p className="text-[#0A2540] text-sm font-archivo-black">Hyperliquid</p>
               </div>
               <div className="flex items-center gap-2 px-3 py-1.5 bg-[#00D9A5]/10 rounded-full">
                 <div className="w-2 h-2 bg-[#00D9A5] rounded-full" />
@@ -162,16 +167,18 @@ export default function SettingsPage() {
             <div className="h-px bg-[#E8ECF1]" />
             <div>
               <p className="text-[#6B7C93] text-xs font-medium mb-1">Chain ID</p>
-              <p className="text-[#0A2540] text-sm font-semibold font-mono">998</p>
+              <p className="text-[#0A2540] text-sm font-archivo-black font-mono">999</p>
             </div>
           </div>
         </div>
 
         {/* About Section */}
-        <div className="bg-white rounded-2xl p-5 shadow-sm">
+        <div className="bg-white rounded-2xl p-5 shadow-sm card-hover">
           <div className="flex items-center gap-2 mb-4">
-            <Info className="w-5 h-5 text-[#0075FF]" />
-            <h3 className="text-lg font-bold text-[#0A2540]">About</h3>
+            <div className="w-10 h-10 rounded-xl bg-[#0075FF]/10 flex items-center justify-center">
+              <Info className="w-5 h-5 text-[#0075FF]" />
+            </div>
+            <h3 className="text-lg font-archivo-black text-[#0A2540]">About</h3>
           </div>
           <div className="space-y-4">
             <div>
@@ -187,7 +194,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Danger Zone */}
-        <div className="bg-white rounded-2xl p-5 shadow-sm border-2 border-[#FF3D71]/20">
+        <div className="bg-white rounded-2xl p-5 shadow-sm border-2 border-[#FF3D71]/20 card-hover">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-[#6B7C93] text-xs font-medium mb-1">Disconnect Wallet</p>

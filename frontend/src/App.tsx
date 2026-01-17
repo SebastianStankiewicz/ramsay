@@ -16,11 +16,11 @@ function App() {
   const [screen, setScreen] = useState<Screen>('onboarding1');
   const [fundAmount, setFundAmount] = useState('');
   const [showDepositModal, setShowDepositModal] = useState(false);
-  const [showSavingsModal, setShowSavingsModal] = useState(false);
-  const [savingsAction, setSavingsAction] = useState<'deposit' | 'withdraw'>('deposit');
+  const [showRamsayModal, setShowRamsayModal] = useState(false);
+  const [RamsayAction, setRamsayAction] = useState<'deposit' | 'withdraw'>('deposit');
   const [modalAmount, setModalAmount] = useState('');
   const [balance, setBalance] = useState(0);
-  const [savingsBalance, setSavingsBalance] = useState(0);
+  const [RamsayBalance, setRamsayBalance] = useState(0);
   
   // Generate or load wallet address and private key
   const [walletAddress] = useState(() => {
@@ -60,25 +60,25 @@ function App() {
     }
   };
 
-  const handleSavingsAction = () => {
+  const handleRamsayAction = () => {
     const amount = parseFloat(modalAmount);
     if (amount > 0) {
-      if (savingsAction === 'deposit' && amount <= balance) {
+      if (RamsayAction === 'deposit' && amount <= balance) {
         setBalance(prev => prev - amount);
-        setSavingsBalance(prev => prev + amount);
-      } else if (savingsAction === 'withdraw' && amount <= savingsBalance) {
-        setSavingsBalance(prev => prev - amount);
+        setRamsayBalance(prev => prev + amount);
+      } else if (RamsayAction === 'withdraw' && amount <= RamsayBalance) {
+        setRamsayBalance(prev => prev - amount);
         setBalance(prev => prev + amount);
       }
-      setShowSavingsModal(false);
+      setShowRamsayModal(false);
       setModalAmount('');
     }
   };
 
-  const openSavingsModal = (action: 'deposit' | 'withdraw') => {
-    setSavingsAction(action);
+  const openRamsayModal = (action: 'deposit' | 'withdraw') => {
+    setRamsayAction(action);
     setModalAmount('');
-    setShowSavingsModal(true);
+    setShowRamsayModal(true);
   };
 
   const handleOnboardingComplete = () => {
@@ -130,17 +130,17 @@ function App() {
     return (
         <Dashboard
           balance={balance}
-          savingsBalance={savingsBalance}
+          RamsayBalance={RamsayBalance}
           showDepositModal={showDepositModal}
-          showSavingsModal={showSavingsModal}
-          savingsAction={savingsAction}
+          showRamsayModal={showRamsayModal}
+          RamsayAction={RamsayAction}
           modalAmount={modalAmount}
           onDepositModalClose={() => setShowDepositModal(false)}
-          onSavingsModalClose={() => setShowSavingsModal(false)}
-          onOpenSavingsModal={openSavingsModal}
+          onRamsayModalClose={() => setShowRamsayModal(false)}
+          onOpenRamsayModal={openRamsayModal}
           onModalAmountChange={setModalAmount}
           onAddMoney={handleAddMoney}
-          onSavingsAction={handleSavingsAction}
+          onRamsayAction={handleRamsayAction}
           onOpenSettings={() => setScreen('settings')}
         />
       );

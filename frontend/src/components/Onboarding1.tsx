@@ -13,7 +13,7 @@ export default function Onboarding1({ onNext }: Onboarding1Props) {
             <img src={pigImage} alt="Money pig" className="onboarding-pig" />
           </div>
           <p className="onboarding-description">
-            Earn high yields on your savings with Hyperliquid vaults, no crypto knowledge required.
+            Earn high yields on your Ramsay with Hyperliquid vaults, no crypto knowledge required.
           </p>
         </div>
         <div className="onboarding-footer">

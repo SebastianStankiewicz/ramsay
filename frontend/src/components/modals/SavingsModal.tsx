@@ -1,36 +1,36 @@
 import { formatCurrency } from '../../utils/formatCurrency';
 
-type SavingsModalProps = {
+type RamsayModalProps = {
   isOpen: boolean;
   action: 'deposit' | 'withdraw';
   modalAmount: string;
   balance: number;
-  savingsBalance: number;
+  RamsayBalance: number;
   onClose: () => void;
   onAmountChange: (amount: string) => void;
   onAction: () => void;
 };
 
-export default function SavingsModal({
+export default function RamsayModal({
   isOpen,
   action,
   modalAmount,
   balance,
-  savingsBalance,
+  RamsayBalance,
   onClose,
   onAmountChange,
   onAction,
-}: SavingsModalProps) {
+}: RamsayModalProps) {
   if (!isOpen) return null;
 
-  const available = action === 'deposit' ? balance : savingsBalance;
+  const available = action === 'deposit' ? balance : RamsayBalance;
 
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-sheet" onClick={e => e.stopPropagation()}>
         <div className="modal-handle" />
         <div className="modal-header">
-          <h3>{action === 'deposit' ? 'Add to Savings' : 'Withdraw'}</h3>
+          <h3>{action === 'deposit' ? 'Add to Ramsay' : 'Withdraw'}</h3>
           <button className="modal-close" onClick={onClose}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <path d="M18 6L6 18M6 6l12 12" />
@@ -70,10 +70,10 @@ export default function SavingsModal({
             !modalAmount ||
             parseFloat(modalAmount) <= 0 ||
             (action === 'deposit' && parseFloat(modalAmount) > balance) ||
-            (action === 'withdraw' && parseFloat(modalAmount) > savingsBalance)
+            (action === 'withdraw' && parseFloat(modalAmount) > RamsayBalance)
           }
         >
-          {action === 'deposit' ? 'Add to Savings' : 'Withdraw'}
+          {action === 'deposit' ? 'Add to Ramsay' : 'Withdraw'}
         </button>
       </div>
     </div>

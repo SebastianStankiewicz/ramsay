@@ -10,23 +10,20 @@ interface OnboardingStep3Props {
 export function OnboardingStep3({ onComplete, onBack }: OnboardingStep3Props) {
   return (
     <OnboardingLayout
-      title="You're all set!"
-      subtitle="Ready to get started?"
+      title=""
+      subtitle=""
       buttonText="Go to Dashboard"
       onButtonClick={onComplete}
       showBack={!!onBack}
       onBack={onBack}
     >
-      <div className="flex flex-col items-center gap-4">
-        <div className="w-20 h-20 bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center animate-scale-in">
-          <CheckCircle2 className="w-10 h-10 text-white" />
-        </div>
-        <div className="flex items-center gap-3 bg-white/20 backdrop-blur-xl rounded-2xl p-5 text-white border border-white/30 w-full">
-          <Sparkles className="w-6 h-6" />
-          <div className="text-left">
-            <p className="font-semibold">Start Earning</p>
-            <p className="text-white/70 text-sm">Deposit and watch your money grow</p>
+      <div className="flex flex-col w-full gap-8">
+        {/* Hero headline - same size as step 1 & 2 */}
+        <div className="text-left w-full">
+          <div className="font-archivo-black text-white text-[4.95rem] sm:text-[3.9rem] md:text-[4.9rem] leading-[0.8] tracking-tight">
+            YOU'RE ALL<br />SET.
           </div>
+          <p className="text-white/80 text-[1.3rem] font-light mt-3">Ready to get started?</p>
         </div>
       </div>
     </OnboardingLayout>

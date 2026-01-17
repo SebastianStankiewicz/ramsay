@@ -54,7 +54,7 @@ export default function DashboardPage() {
     <main className="min-h-screen bg-[#F5F7FA] flex flex-col">
       {/* Header */}
       <header className="flex justify-between items-center px-6 pt-12 pb-6 bg-white/80 backdrop-blur-xl sticky top-0 z-20 border-b border-[#E8ECF1]/50">
-        <h1 className="text-2xl font-bold text-[#0A2540]">Savings</h1>
+        <h1 className="text-2xl font-archivo-black text-[#0A2540]">Ramsay</h1>
         <button
           onClick={() => router.push('/settings')}
           className="p-2 hover:bg-[#F5F7FA] rounded-full transition-all duration-200 active:scale-95"
@@ -72,24 +72,34 @@ export default function DashboardPage() {
           ) : vault ? (
             <div className="bg-gradient-to-br from-[#0075FF] to-[#00D4FF] rounded-3xl p-6 shadow-2xl card-hover animate-bounce-in">
               {/* Card Header */}
-              <div className="flex items-start justify-between mb-6 animate-slide-in-right">
-                <div>
-                  <h2 className="text-white/90 text-sm font-medium mb-2">
-                    {vault.name || 'Vault'}
-                  </h2>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-4xl font-bold text-white tabular-nums">
-                      {formatCurrency(userBalance)}
-                    </span>
-                  </div>
-                </div>
-                <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full backdrop-blur-sm transition-all ${
-                  vault.apr >= 0 ? 'bg-white/20 hover:bg-white/30' : 'bg-red-500/30'
-                }`}>
-                  <TrendingUp className={`w-4 h-4 transition-transform ${vault.apr >= 0 ? 'text-white' : 'text-red-200 rotate-180'}`} />
-                  <span className={`text-sm font-bold ${vault.apr >= 0 ? 'text-white' : 'text-red-200'}`}>
-                    {vault.apr >= 0 ? '+' : ''}{(vault.apr * 100).toFixed(2)}%
+              <div className="mb-6 animate-slide-in-right">
+                <h2 className="text-white/90 text-sm font-medium mb-4">
+                  {vault.name || 'Vault'}
+                </h2>
+                <div className="flex items-baseline gap-2 mb-4">
+                  <span className="text-4xl font-archivo-black text-white tabular-nums">
+                    {formatCurrency(userBalance)}
                   </span>
+                </div>
+                
+                {/* Prominent APY Display */}
+                <div className="bg-white/20 backdrop-blur-md rounded-2xl p-4 border border-white/30">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-white/70 text-xs font-normal uppercase tracking-wider mb-1">Last 30 Days</p>
+                      <div className="flex items-baseline gap-2">
+                        <span className={`text-3xl font-archivo-black tabular-nums ${vault.apr >= 0 ? 'text-white' : 'text-red-200'}`}>
+                          {vault.apr >= 0 ? '+' : ''}{(vault.apr * 100).toFixed(2)}%
+                        </span>
+                        <span className="text-white/60 text-sm font-normal">APY</span>
+                      </div>
+                    </div>
+                    <div className={`flex items-center justify-center w-12 h-12 rounded-xl backdrop-blur-sm ${
+                      vault.apr >= 0 ? 'bg-white/20' : 'bg-red-500/30'
+                    }`}>
+                      <TrendingUp className={`w-6 h-6 transition-transform ${vault.apr >= 0 ? 'text-white' : 'text-red-200 rotate-180'}`} />
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -98,18 +108,12 @@ export default function DashboardPage() {
                 <div className="relative w-[250px] h-[250px] animate-float">
                   <Image
                     src="/assets/pig.png"
-                    alt="Savings Vault"
+                    alt="Ramsay Vault"
                     fill
                     className="object-contain drop-shadow-2xl"
                     priority
                   />
                 </div>
-              </div>
-
-              {/* Balance Label */}
-              <div className="text-center animate-fade-in-delay">
-                <p className="text-white/70 text-xs font-medium uppercase tracking-wider mb-1">Your Balance</p>
-                <p className="text-white text-lg font-semibold tabular-nums">{formatCurrency(userBalance)}</p>
               </div>
             </div>
           ) : (
@@ -127,8 +131,8 @@ export default function DashboardPage() {
           <div className="bg-white rounded-2xl p-5 mb-6 shadow-sm card-hover animate-slide-up">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-[#6B7C93] text-sm font-medium">Total Locked Value</span>
-                <span className="text-[#0A2540] text-lg font-bold tabular-nums">
+                <span className="text-[#6B7C93] text-sm font-normal">Total Locked Value</span>
+                <span className="text-[#0A2540] text-lg font-archivo-black tabular-nums">
                   {vault.tvl >= 1_000_000_000
                     ? `$${(vault.tvl / 1_000_000_000).toFixed(1)}B`
                     : vault.tvl >= 1_000_000
@@ -140,8 +144,8 @@ export default function DashboardPage() {
               </div>
               <div className="h-px bg-gradient-to-r from-transparent via-[#E8ECF1] to-transparent" />
               <div className="flex items-center justify-between">
-                <span className="text-[#6B7C93] text-sm font-medium">Your Holdings</span>
-                <span className="text-[#0A2540] text-lg font-bold tabular-nums">{formatCurrency(userBalance)}</span>
+                <span className="text-[#6B7C93] text-sm font-normal">Your Holdings</span>
+                <span className="text-[#0A2540] text-lg font-archivo-black tabular-nums">{formatCurrency(userBalance)}</span>
               </div>
               {vault.followerCount > 0 && (
                 <>

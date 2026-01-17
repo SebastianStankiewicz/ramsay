@@ -20,66 +20,66 @@ export default function WelcomePage() {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 text-center max-w-md animate-bounce-in">
+      <div className="relative z-10 w-full max-w-md animate-bounce-in flex flex-col items-start">
         {/* Logo */}
-        <div className="mb-12 relative">
-          <div className="w-28 h-28 bg-white rounded-3xl flex items-center justify-center text-[#0075FF] text-6xl font-bold mx-auto shadow-2xl hover:scale-110 transition-transform duration-300 pulse-ring">
+        <div className="mb-8 relative animate-float">
+          <div className="w-24 h-24 bg-white rounded-2xl flex items-center justify-center text-[#0075FF] text-5xl font-archivo-black shadow-2xl">
             R
           </div>
-          {/* Floating particles */}
-          <div className="absolute -top-2 -right-2 w-3 h-3 bg-white rounded-full opacity-60 animate-float" style={{ animationDelay: '0s' }} />
-          <div className="absolute -bottom-2 -left-2 w-2 h-2 bg-white rounded-full opacity-60 animate-float" style={{ animationDelay: '1s' }} />
-          <div className="absolute top-1/2 -right-4 w-2.5 h-2.5 bg-white rounded-full opacity-60 animate-float" style={{ animationDelay: '2s' }} />
         </div>
 
         {/* Title */}
-        <h1 className="text-6xl font-bold text-white mb-4 tracking-tight animate-fade-in-delay font-balgin">
+        <h1 className="text-5xl font-archivo-black text-white mb-6 tracking-tight text-left">
           Ramsay
         </h1>
-        <p className="text-white/90 text-xl font-medium mb-12 animate-fade-in-delay-2 leading-relaxed px-4">
-          <strong>Money that works harder</strong> — because your savings deserve to grow while you sleep. <strong>No hassle, just results.</strong>
-        </p>
+
+        <div className="text-left w-full mb-2">
+          <div className="font-archivo-black text-white text-[4.95rem] sm:text-[3.9rem] md:text-[4.9rem] leading-[0.8] tracking-tight">
+            MONEY THAT<br />WORKS<br />HARDER.
+          </div>
+          <p className="text-white/80 text-[1.3rem] font-light mt-3">Because your Ramsay deserve to grow while you sleep. No hassle, just results.</p>
+        </div>
 
         {/* Features */}
-        <div className="space-y-4 mb-16 animate-fade-in-delay-2">
-          <div className="flex items-center gap-4 bg-white/20 backdrop-blur-xl rounded-2xl p-5 text-white border border-white/30 card-hover">
-            <div className="w-12 h-12 bg-white/30 rounded-xl flex items-center justify-center backdrop-blur-sm">
-              <Zap className="w-6 h-6" />
+        <div className="space-y-3 mb-16 w-full mt-8">
+          <div className="flex items-center gap-3 bg-white/10 rounded-xl p-4 text-white">
+            <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
+              <Zap className="w-5 h-5" />
             </div>
             <div className="flex-1 text-left">
-              <p className="font-semibold text-lg"><strong>Instant transfers</strong></p>
-              <p className="text-white/70 text-sm">Move your money <strong>instantly</strong>, anywhere in the world</p>
+              <p className="font-archivo-black text-sm mb-0.5">Instant transfers</p>
+              <p className="text-white/60 text-xs font-normal">Move your money instantly, anywhere in the world</p>
             </div>
           </div>
-          <div className="flex items-center gap-4 bg-white/20 backdrop-blur-xl rounded-2xl p-5 text-white border border-white/30 card-hover">
-            <div className="w-12 h-12 bg-white/30 rounded-xl flex items-center justify-center backdrop-blur-sm">
-              <Shield className="w-6 h-6" />
+          <div className="flex items-center gap-3 bg-white/10 rounded-xl p-4 text-white">
+            <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
+              <Shield className="w-5 h-5" />
             </div>
             <div className="flex-1 text-left">
-              <p className="font-semibold text-lg"><strong>Powered by Hyperliquid</strong></p>
-              <p className="text-white/70 text-sm">Built on <strong>secure</strong> DeFi infrastructure you can trust</p>
+              <p className="font-archivo-black text-sm mb-0.5">Powered by Hyperliquid</p>
+              <p className="text-white/60 text-xs font-normal">Built on secure DeFi infrastructure you can trust</p>
             </div>
           </div>
-          <div className="flex items-center gap-4 bg-white/20 backdrop-blur-xl rounded-2xl p-5 text-white border border-white/30 card-hover">
-            <div className="w-12 h-12 bg-white/30 rounded-xl flex items-center justify-center backdrop-blur-sm">
-              <Sparkles className="w-6 h-6" />
+          <div className="flex items-center gap-3 bg-white/10 rounded-xl p-4 text-white">
+            <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
+              <Sparkles className="w-5 h-5" />
             </div>
             <div className="flex-1 text-left">
-              <p className="font-semibold text-lg"><strong>High yields</strong></p>
-              <p className="text-white/70 text-sm">Earn <strong>competitive APY</strong> on your savings — watch them grow</p>
+              <p className="font-archivo-black text-sm mb-0.5">High yields</p>
+              <p className="text-white/60 text-xs font-normal">Earn competitive APY on your Ramsay — watch them grow</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Footer Button */}
-      <div className="absolute bottom-8 left-6 right-6 animate-fade-in-delay-3">
+      <div className="absolute bottom-8 left-6 right-6">
         <button
           onClick={handleGetStarted}
-          className="w-full bg-white text-[#0075FF] py-5 rounded-2xl font-semibold text-lg flex items-center justify-center gap-3 shadow-2xl hover:shadow-3xl hover:scale-[1.02] transition-all duration-200 active:scale-[0.98] ripple"
+          className="w-full max-w-md mx-auto bg-white text-[#0075FF] py-4 rounded-lg font-semibold text-base flex items-center justify-center gap-2 hover:bg-gray-50 active:bg-gray-100 transition-colors duration-150"
         >
           <span>Let's get started</span>
-          <ArrowRight className="w-6 h-6" strokeWidth={2.5} />
+          <ArrowRight className="w-5 h-5" strokeWidth={2.5} />
         </button>
       </div>
     </div>

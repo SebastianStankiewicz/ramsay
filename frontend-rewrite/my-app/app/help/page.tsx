@@ -10,7 +10,7 @@ export default function HelpPage() {
     {
       icon: Book,
       title: "Getting Started",
-      description: "Learn how to deposit and manage your savings",
+      description: "Learn how to deposit and manage your Ramsay",
     },
     {
       icon: Shield,

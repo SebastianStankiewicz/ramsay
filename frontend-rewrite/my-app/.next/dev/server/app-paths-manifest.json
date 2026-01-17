@@ -2,5 +2,6 @@
   "/api/account/route": "app/api/account/route.js",
   "/api/vault/route": "app/api/vault/route.js",
   "/dashboard/page": "app/dashboard/page.js",
-  "/onboarding/[step]/page": "app/onboarding/[step]/page.js"
+  "/onboarding/[step]/page": "app/onboarding/[step]/page.js",
+  "/settings/page": "app/settings/page.js"
 }
