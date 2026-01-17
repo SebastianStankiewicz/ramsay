@@ -3,6 +3,19 @@
 # Base URL - adjust port if needed
 BASE_URL="http://localhost:5069"
 
+echo "=========================================="
+echo "Ramsay Backend API Examples"
+echo "=========================================="
+echo ""
+echo "To run server in MOCK MODE:"
+echo "  python main.py --mock"
+echo ""
+echo "To run server in REAL MODE:"
+echo "  python main.py"
+echo ""
+echo "=========================================="
+echo ""
+
 echo "=== 1. Create Account ==="
 curl -X POST "http://localhost:5069/createAccount" \
   -H "Content-Type: application/json" \

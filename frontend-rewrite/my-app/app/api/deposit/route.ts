@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
         console.log("Next.js Proxy received:", body);
 
         // 2. Map camelCase (JS) to snake_case (Python Flask)
-        const response = await fetch("http://127.0.0.1:5069/depositToVault", {
+        const response = await fetch("http://127.0.0.1:5069/deposit", {
           method: "POST",
           headers: {
             "Content-Type": "application/json"

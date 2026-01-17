@@ -5,6 +5,7 @@ from hyperliquid.exchange import Exchange
 from hyperliquid.utils import constants
 from flask import Flask, jsonify, request
 import os
+import argparse
 import eth_account
 from eth_account.signers.local import LocalAccount
 from web3 import Web3
@@ -226,9 +227,16 @@ def depositToVault(user_address: str, private_key: str, vault_address: str, usd_
     
     return transfer_result
 
-def create_app():
+def create_app(mock_mode=False):
+    """
+    Create Flask app instance.
+    
+    Args:
+        mock_mode: If True, all deposits will default to mock mode (can be overridden per request)
+    """
     app = Flask(__name__)
     app.config["DEBUG"] = os.getenv("FLASK_DEBUG", "true").lower() == "true"
+    app.config["MOCK_MODE"] = mock_mode or os.getenv("MOCK_MODE", "false").lower() == "true"
     
     # Enable CORS for all routes
     @app.after_request
@@ -257,66 +265,283 @@ def create_app():
         walletDB.create_user(wallet['private_key'], wallet['public_key'], wallet['address'])
         return jsonify({"status": "ok", "message": "Account created", "data": user.getWalletDetails()})
 
-    @app.route("/deposit")
+    @app.route("/deposit", methods=["POST"])
     def deposit():
-        #Deposit via moonpay or similar as eth on the eth chain 
-        #Mark as validated or idk a transaction queue that will wait for this to validate OR offload this to the fron end aand only except complete TX???
-        #FOR NOW THIS WILL CALL A TEST NET FAUCET
-        return jsonify({"status": "ok", "message": "Flask API running"})
-    
-    #This can be called via like after a TX been made 
-    @app.route("/processDeposit", methods=["POST"])
-    def processDeposit():
         """
-        Process deposit by bridging ETH from Ethereum to HyperLiquid via Li.Fi.
-        Gets quote and executes the bridge transaction in one step.
+        Full deposit flow:
+        1. Record fiat deposit (MOCK - in production would integrate with MoonPay/Ramp)
+        2. Bridge ETH from Ethereum wallet to HyperLiquid via Li.Fi
+        3. Deposit to vault on HyperLiquid
+        
+        Flow: Fiat → Wallet (Ethereum) → Bridge via Li.Fi → HyperLiquid → Vault
+        
+        Query param or body: mock=true to simulate entire flow without real transactions
         """
         data = request.get_json()
         
         user_address = data.get("userAddress")
         private_key = data.get("privateKey")
-        amount_wei = data.get("amountWei")
-        to_address = data.get("toAddress")  # Optional
+        amount_usd = data.get("amount")  # Amount in USD
+        vault_address = data.get("vaultAddress")
+        # Use request mock flag, or fall back to server-wide mock mode config
+        mock = data.get("mock", False) or request.args.get("mock", "false").lower() == "true" or app.config.get("MOCK_MODE", False)
         
-        if not user_address or not private_key or not amount_wei:
+        if not all([user_address, amount_usd, vault_address]):
             return jsonify({
                 "status": "error",
-                "message": "Missing required fields: userAddress, privateKey, amountWei"
+                "message": "Missing required fields: userAddress, amount, vaultAddress"
+            }), 400
+        
+        # Validate minimum deposit amount
+        MIN_DEPOSIT = 100.0
+        amount_usd_float = float(amount_usd)
+        if amount_usd_float < MIN_DEPOSIT:
+            return jsonify({
+                "status": "error",
+                "message": f"Minimum deposit is ${MIN_DEPOSIT} USD"
+            }), 400
+        
+        # In mock mode, private_key is optional
+        if not mock and not private_key:
+            return jsonify({
+                "status": "error",
+                "message": "Missing required field: privateKey (not needed in mock mode)"
             }), 400
         
         try:
-            # Get quote and execute bridge in one step
-            result = bridgeViaLifiAndExecute(user_address, private_key, amount_wei, to_address)
+            # amount_usd_float already validated above
             
-            # Log transaction to database
-            try:
-                quote = result.get("quote", {})
-                action = quote.get("action", {})
-                from_token = action.get("fromToken", {}).get("symbol", "ETH")
-                to_token = action.get("toToken", {}).get("symbol", "HYPE")
-                estimate = quote.get("estimate", {})
-                amount_usd = float(estimate.get("fromAmountUSD", 0)) if estimate.get("fromAmountUSD") else None
+            # Generate mock transaction hashes if in mock mode
+            import secrets
+            def generate_mock_tx_hash():
+                return "0x" + secrets.token_hex(32)
+            
+            if mock:
+                # MOCK MODE: Simulate entire flow without real transactions
+                mock_fiat_tx_hash = generate_mock_tx_hash()
+                mock_bridge_tx_hash = generate_mock_tx_hash()
+                mock_vault_tx_hash = generate_mock_tx_hash()
                 
+                # Step 1: Log mock fiat deposit
+                try:
+                    walletDB.add_transaction(
+                        user_address=user_address,
+                        tx_type="deposit",
+                        tx_hash=mock_fiat_tx_hash,
+                        status="completed",
+                        amount_usd=amount_usd_float,
+                        vault_address=vault_address,
+                        metadata={
+                            "amount": amount_usd_float,
+                            "vault_address": vault_address,
+                            "mock": True,
+                            "step": "fiat_deposit"
+                        }
+                    )
+                except Exception as log_error:
+                    print(f"Failed to log mock deposit transaction: {log_error}")
+                
+                # Step 2: Convert USD to ETH (for logging purposes)
+                ETH_PRICE_USD = 3000.0
+                eth_amount = amount_usd_float / ETH_PRICE_USD
+                amount_wei = str(int(eth_amount * 1e18))
+                
+                # Step 3: Log mock bridge transaction
+                try:
+                    walletDB.add_transaction(
+                        user_address=user_address,
+                        tx_type="bridge",
+                        tx_hash=mock_bridge_tx_hash,
+                        status="completed",
+                        from_chain="1",
+                        to_chain="999",
+                        from_token="ETH",
+                        to_token="HYPE",
+                        amount_wei=amount_wei,
+                        amount_usd=amount_usd_float,
+                        metadata={
+                            "mock": True,
+                            "step": "bridge",
+                            "note": "Mock bridge transaction - funds simulated on HyperLiquid"
+                        }
+                    )
+                except Exception as log_error:
+                    print(f"Failed to log mock bridge transaction: {log_error}")
+                
+                # Step 4: Log mock vault deposit
+                try:
+                    walletDB.add_transaction(
+                        user_address=user_address,
+                        tx_type="vault_deposit",
+                        tx_hash=mock_vault_tx_hash,
+                        status="completed",
+                        amount_usd=amount_usd_float,
+                        vault_address=vault_address,
+                        metadata={
+                            "mock": True,
+                            "step": "vault_deposit",
+                            "note": "Mock vault deposit - funds simulated in vault"
+                        }
+                    )
+                except Exception as log_error:
+                    print(f"Failed to log mock vault deposit transaction: {log_error}")
+                
+                # Return mock success response
+                return jsonify({
+                    "status": "ok",
+                    "message": "Deposit flow completed (MOCK MODE)",
+                    "data": {
+                        "userAddress": user_address,
+                        "amount": amount_usd_float,
+                        "vaultAddress": vault_address,
+                        "fiatDepositTxHash": mock_fiat_tx_hash,
+                        "bridgeTxHash": mock_bridge_tx_hash,
+                        "vaultDepositTxHash": mock_vault_tx_hash,
+                        "steps": {
+                            "fiat_deposit": "completed (mock)",
+                            "bridge": "completed (mock)",
+                            "vault_deposit": "completed (mock)"
+                        },
+                        "mock": True
+                    }
+                })
+            
+            # REAL MODE: Execute actual transactions
+            if not private_key:
+                return jsonify({
+                    "status": "error",
+                    "message": "privateKey required for real transactions"
+                }), 400
+            
+            # Step 1: Log initial deposit transaction (MOCK - no actual payment processing)
+            deposit_tx_id = None
+            try:
                 walletDB.add_transaction(
                     user_address=user_address,
-                    tx_type="bridge",
-                    tx_hash=result.get("txHash"),
+                    tx_type="deposit",
+                    tx_hash=None,  # Mock data - no actual transaction hash yet
                     status="pending",
-                    from_chain=str(action.get("fromChainId", "1")),
-                    to_chain=str(action.get("toChainId", "999")),
-                    from_token=from_token,
-                    to_token=to_token,
-                    amount_wei=amount_wei,
-                    amount_usd=amount_usd,
-                    metadata={"quote": quote}
+                    amount_usd=amount_usd_float,
+                    vault_address=vault_address,
+                    metadata={
+                        "amount": amount_usd_float,
+                        "vault_address": vault_address,
+                        "mock": True,
+                        "step": "fiat_deposit"
+                    }
                 )
             except Exception as log_error:
-                print(f"Failed to log transaction: {log_error}")
+                print(f"Failed to log deposit transaction: {log_error}")
             
+            # Step 2: Convert USD to ETH (approximate - in production use real-time rate)
+            # Rough estimate: 1 ETH ≈ $3000 USD (this should be fetched from an API in production)
+            ETH_PRICE_USD = 3000.0  # TODO: Fetch from price API
+            eth_amount = amount_usd_float / ETH_PRICE_USD
+            amount_wei = str(int(eth_amount * 1e18))
+            
+            # Step 3: Bridge ETH from Ethereum to HyperLiquid via Li.Fi
+            bridge_result = None
+            bridge_tx_hash = None
+            try:
+                bridge_result = bridgeViaLifiAndExecute(
+                    user_address=user_address,
+                    private_key=private_key,
+                    amount_wei=amount_wei
+                )
+                bridge_tx_hash = bridge_result.get("txHash")
+                
+                # Log bridge transaction
+                try:
+                    quote = bridge_result.get("quote", {})
+                    action = quote.get("action", {})
+                    walletDB.add_transaction(
+                        user_address=user_address,
+                        tx_type="bridge",
+                        tx_hash=bridge_tx_hash,
+                        status="pending",
+                        from_chain=str(action.get("fromChainId", "1")),
+                        to_chain=str(action.get("toChainId", "999")),
+                        from_token=action.get("fromToken", {}).get("symbol", "ETH"),
+                        to_token=action.get("toToken", {}).get("symbol", "HYPE"),
+                        amount_wei=amount_wei,
+                        amount_usd=amount_usd_float,
+                        metadata={
+                            "quote": quote,
+                            "step": "bridge"
+                        }
+                    )
+                except Exception as log_error:
+                    print(f"Failed to log bridge transaction: {log_error}")
+            except Exception as bridge_error:
+                return jsonify({
+                    "status": "error",
+                    "message": f"Bridge failed: {str(bridge_error)}"
+                }), 500
+            
+            # Step 4: Deposit to vault on HyperLiquid
+            vault_deposit_result = None
+            vault_tx_hash = None
+            try:
+                vault_deposit_result = depositToVault(
+                    user_address=user_address,
+                    private_key=private_key,
+                    vault_address=vault_address,
+                    usd_amount=amount_usd_float
+                )
+                # Handle different return types from vault_usd_transfer
+                if isinstance(vault_deposit_result, dict):
+                    vault_tx_hash = vault_deposit_result.get("txHash") or vault_deposit_result.get("response", {}).get("txHash")
+                elif isinstance(vault_deposit_result, str):
+                    # If it's a string, it might be a status message or transaction hash
+                    vault_tx_hash = vault_deposit_result if vault_deposit_result.startswith("0x") else None
+                else:
+                    vault_tx_hash = None
+                
+                # Log vault deposit transaction
+                try:
+                    # Convert result to dict if it's a string for metadata
+                    result_metadata = vault_deposit_result
+                    if isinstance(vault_deposit_result, str):
+                        result_metadata = {"response": vault_deposit_result}
+                    elif not isinstance(vault_deposit_result, dict):
+                        result_metadata = {"response": str(vault_deposit_result)}
+                    
+                    walletDB.add_transaction(
+                        user_address=user_address,
+                        tx_type="vault_deposit",
+                        tx_hash=vault_tx_hash,
+                        status="completed",
+                        amount_usd=amount_usd_float,
+                        vault_address=vault_address,
+                        metadata={
+                            "result": result_metadata,
+                            "step": "vault_deposit"
+                        }
+                    )
+                except Exception as log_error:
+                    print(f"Failed to log vault deposit transaction: {log_error}")
+            except Exception as vault_error:
+                return jsonify({
+                    "status": "error",
+                    "message": f"Vault deposit failed: {str(vault_error)}"
+                }), 500
+            
+            # Return success with all transaction details
             return jsonify({
                 "status": "ok",
-                "message": result["message"],
-                "data": result
+                "message": "Deposit flow completed",
+                "data": {
+                    "userAddress": user_address,
+                    "amount": amount_usd_float,
+                    "vaultAddress": vault_address,
+                    "bridgeTxHash": bridge_tx_hash,
+                    "vaultDepositTxHash": vault_tx_hash,
+                    "steps": {
+                        "fiat_deposit": "completed (mock)",
+                        "bridge": "completed" if bridge_tx_hash else "pending",
+                        "vault_deposit": "completed" if vault_tx_hash else "pending"
+                    }
+                }
             })
         except Exception as e:
             return jsonify({
@@ -329,47 +554,6 @@ def create_app():
     def getVaultsRoute():
         vaults = getVaults()
         return jsonify({"status": "ok", "message": "Vaults retrieved", "data": vaults})
-    
-    @app.route("/depositToVault", methods=["POST"])
-    def depositToVaultRoute():
-        data = request.get_json()
-        print(data)
-        
-        user_address = data.get("userAddress")
-        private_key = data.get("privateKey")
-        vault_address = data.get("vaultAddress")
-        usd_amount = data.get("amount")
-        
-        if not all([user_address, private_key, vault_address, usd_amount]):
-            return jsonify({
-                "status": "error",
-                "message": "Missing required fields: userAddress, privateKey, vaultAddress, amount"
-            }), 400
-        
-        try:
-            result = depositToVault(user_address, private_key, vault_address, float(usd_amount))
-            
-            # Log transaction to database
-            try:
-                tx_hash = result.get("txHash") or result.get("response", {}).get("txHash") if isinstance(result, dict) else None
-                walletDB.add_transaction(
-                    user_address=user_address,
-                    tx_type="vault_deposit",
-                    tx_hash=tx_hash,
-                    status="completed",
-                    amount_usd=float(usd_amount),
-                    vault_address=vault_address,
-                    metadata={"result": result}
-                )
-            except Exception as log_error:
-                print(f"Failed to log transaction: {log_error}")
-            
-            return jsonify({"status": "ok", "message": "Deposit successful", "data": result})
-        except Exception as e:
-            return jsonify({
-                "status": "error",
-                "message": str(e)
-            }), 500
     
     @app.route("/getTransactionHistory", methods=["GET"])
     def getTransactionHistoryRoute():
@@ -398,8 +582,58 @@ def create_app():
                 "status": "error",
                 "message": str(e)
             }), 500
+    
+    @app.route("/getUserBalance", methods=["GET"])
+    def getUserBalanceRoute():
+        """
+        Get user's total balance from completed vault deposits.
+        Query params: userAddress (required)
+        """
+        user_address = request.args.get("userAddress")
+        
+        if not user_address:
+            return jsonify({
+                "status": "error",
+                "message": "Missing required parameter: userAddress"
+            }), 400
+        
+        try:
+            balance = walletDB.get_user_balance(user_address)
+            return jsonify({
+                "status": "ok",
+                "message": "Balance retrieved",
+                "data": {
+                    "balance": balance,
+                    "userAddress": user_address
+                }
+            })
+        except Exception as e:
+            return jsonify({
+                "status": "error",
+                "message": str(e)
+            }), 500
 
     return app
+
 if __name__ == "__main__":
-    app = create_app()
-    app.run(host="0.0.0.0", port=5069)
+    parser = argparse.ArgumentParser(description="Ramsay Flask Backend")
+    parser.add_argument(
+        "--mock",
+        action="store_true",
+        help="Run server in mock mode (all deposits will be simulated, no real transactions)"
+    )
+    parser.add_argument(
+        "--port",
+        type=int,
+        default=5069,
+        help="Port to run the server on (default: 5069)"
+    )
+    args = parser.parse_args()
+    
+    app = create_app(mock_mode=args.mock)
+    
+    if app.config.get("MOCK_MODE"):
+        print("SERVER RUNNING IN MOCK MODE")
+
+    
+    app.run(host="0.0.0.0", port=args.port)

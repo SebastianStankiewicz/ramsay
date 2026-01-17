@@ -17,14 +17,16 @@ type Vault = {
 
 export default function DepositPage() {
   const router = useRouter();
-  const [amount, setAmount] = useState<number>(0);
+  const [amount, setAmount] = useState<number>(100);
   const [vault, setVault] = useState<Vault | null>(null);
   const [isDepositing, setIsDepositing] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [showApplePay, setShowApplePay] = useState(false);
-  const [animatedAmount, setAnimatedAmount] = useState(0);
+  const [animatedAmount, setAnimatedAmount] = useState(100);
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
-  const quickAmounts = [10, 25, 50, 75, 100];
+  const MIN_DEPOSIT = 100;
+  const quickAmounts = [100, 250, 500, 750, 1000];
 
   useEffect(() => {
     // Fetch vault data to get the actual vault address and APR
@@ -53,9 +55,10 @@ export default function DepositPage() {
   }, [amount]);
 
   const handleApplePaySuccess = async () => {
-    if (amount === 0 || !vault) return;
+    if (amount < MIN_DEPOSIT || !vault) return;
     
     setIsDepositing(true);
+    setErrorMessage("");
     try {
       const userAddress = localStorage.getItem("address");
       const privateKey = localStorage.getItem("privateKey");
@@ -85,17 +88,34 @@ export default function DepositPage() {
         }, 2500);
       } else {
         console.error("Deposit failed:", result);
+        setErrorMessage(result.message || "Deposit failed. Please try again.");
         setIsDepositing(false);
       }
     } catch (error) {
       console.error("Error depositing to vault:", error);
+      setErrorMessage("An error occurred. Please try again.");
       setIsDepositing(false);
     }
   };
 
   const handleContinueClick = () => {
-    if (amount === 0 || !vault) return;
+    if (amount < MIN_DEPOSIT) {
+      setErrorMessage(`Minimum deposit is $${MIN_DEPOSIT}`);
+      return;
+    }
+    if (!vault) return;
+    setErrorMessage("");
     setShowApplePay(true);
+  };
+
+  const handleAmountChange = (newAmount: number) => {
+    if (newAmount < MIN_DEPOSIT) {
+      setAmount(MIN_DEPOSIT);
+      setErrorMessage(`Minimum deposit is $${MIN_DEPOSIT}`);
+    } else {
+      setAmount(newAmount);
+      setErrorMessage("");
+    }
   };
 
   return (
@@ -129,15 +149,26 @@ export default function DepositPage() {
             )}
           </div>
 
+          {/* Error Message */}
+          {errorMessage && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm text-center animate-fade-in">
+              {errorMessage}
+            </div>
+          )}
+
           {/* Slider */}
           <div className="mb-8 animate-fade-in-delay">
+            <div className="flex justify-between text-xs text-[#6B7C93] mb-2">
+              <span>Min: ${MIN_DEPOSIT}</span>
+              <span>Max: $5000</span>
+            </div>
             <input
               type="range"
-              min="0"
-              max="500"
+              min={MIN_DEPOSIT}
+              max="5000"
               step="1"
               value={amount}
-              onChange={(e) => setAmount(Number(e.target.value))}
+              onChange={(e) => handleAmountChange(Number(e.target.value))}
               className="w-full h-2 bg-[#E8ECF1] rounded-full appearance-none cursor-pointer
                 [&::-webkit-slider-thumb]:appearance-none 
                 [&::-webkit-slider-thumb]:w-7 
@@ -163,7 +194,7 @@ export default function DepositPage() {
                 [&::-moz-range-thumb]:cursor-pointer
                 [&::-moz-range-thumb]:shadow-xl"
               style={{
-                background: `linear-gradient(to right, #0075FF 0%, #00D4FF ${(amount / 500) * 100}%, #E8ECF1 ${(amount / 500) * 100}%, #E8ECF1 100%)`
+                background: `linear-gradient(to right, #0075FF 0%, #00D4FF ${((amount - MIN_DEPOSIT) / (5000 - MIN_DEPOSIT)) * 100}%, #E8ECF1 ${((amount - MIN_DEPOSIT) / (5000 - MIN_DEPOSIT)) * 100}%, #E8ECF1 100%)`
               }}
             />
           </div>
@@ -173,7 +204,7 @@ export default function DepositPage() {
             {quickAmounts.map((value) => (
               <button
                 key={value}
-                onClick={() => setAmount(value)}
+                onClick={() => handleAmountChange(value)}
                 className={`py-3 rounded-xl font-semibold text-sm transition-all duration-200 active:scale-95 ${
                   amount === value
                     ? 'bg-gradient-to-r from-[#0075FF] to-[#00D4FF] text-white shadow-lg scale-105'
@@ -190,7 +221,7 @@ export default function DepositPage() {
         <div className="px-6 pb-8 pt-4 bg-white/80 backdrop-blur-xl border-t border-[#E8ECF1]/50 sticky bottom-0">
           <button
             onClick={handleContinueClick}
-            disabled={amount === 0 || isDepositing || !vault}
+            disabled={amount < MIN_DEPOSIT || isDepositing || !vault}
             className="w-full bg-black text-white py-4 rounded-2xl font-semibold text-base shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2 ripple"
           >
             <Image

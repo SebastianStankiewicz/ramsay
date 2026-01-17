@@ -22,7 +22,19 @@ export default function DashboardPage() {
   const [vault, setVault] = useState<Vault | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [userBalance, setUserBalance] = useState<number>(0); // This would come from user state API
+  const [showLockedPopup, setShowLockedPopup] = useState(false);
+  const [isShaking, setIsShaking] = useState(false);
   const router = useRouter();
+
+  const handleWithdraw = () => {
+    // Trigger shake animation
+    setIsShaking(true);
+    setTimeout(() => setIsShaking(false), 500);
+    
+    // Show popup
+    setShowLockedPopup(true);
+    setTimeout(() => setShowLockedPopup(false), 3000);
+  };
 
   useEffect(() => {
     const getVaultData = async () => {
@@ -47,7 +59,32 @@ export default function DashboardPage() {
       }
     };
 
+    const getUserBalance = async () => {
+      try {
+        const userAddress = localStorage.getItem("address");
+        if (!userAddress) {
+          console.warn("No user address found in localStorage");
+          return;
+        }
+
+        const response = await fetch(`/api/balance?userAddress=${encodeURIComponent(userAddress)}`, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        });
+
+        const result = await response.json();
+        if (response.ok && result.status === "ok" && result.data) {
+          setUserBalance(result.data.balance || 0);
+        } else {
+          console.error("Balance API error:", result.message || "Unknown error");
+        }
+      } catch (error) {
+        console.error("Error fetching balance:", error);
+      }
+    };
+
     getVaultData();
+    getUserBalance();
   }, []);
 
   return (
@@ -179,12 +216,50 @@ export default function DashboardPage() {
             <Plus className="w-5 h-5" strokeWidth={2.5} />
             Deposit
           </button>
-          <button className="flex-1 bg-white text-[#0A2540] py-4 rounded-2xl font-semibold text-base border-2 border-[#E8ECF1] hover:border-[#0075FF] hover:text-[#0075FF] transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2 card-hover">
+          <button
+            onClick={handleWithdraw}
+            className={`flex-1 py-4 rounded-2xl font-semibold text-base border-2 transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2 ${
+              isShaking
+                ? "bg-red-50 text-red-600 border-red-300 shake-animation"
+                : "bg-white text-[#0A2540] border-[#E8ECF1] hover:border-[#0075FF] hover:text-[#0075FF] card-hover"
+            }`}
+          >
             <ArrowUpRight className="w-5 h-5" strokeWidth={2.5} />
             Withdraw
           </button>
         </div>
       </div>
+
+      {/* Locked Wallet Popup */}
+      {showLockedPopup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-2xl p-6 mx-4 shadow-2xl max-w-sm w-full animate-slide-up">
+            <div className="text-center">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center">
+                <svg
+                  className="w-8 h-8 text-red-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-xl font-archivo-black text-[#0A2540] mb-2">
+                Wallet Locked
+              </h3>
+              <p className="text-[#6B7C93] text-sm">
+                Your wallet is locked for 24 hours before you can withdraw.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

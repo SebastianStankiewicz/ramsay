@@ -1,5 +1,6 @@
 {
   "/api/account/route": "app/api/account/route.js",
+  "/api/balance/route": "app/api/balance/route.js",
   "/api/deposit/route": "app/api/deposit/route.js",
   "/api/vault/route": "app/api/vault/route.js",
   "/dashboard/page": "app/dashboard/page.js",

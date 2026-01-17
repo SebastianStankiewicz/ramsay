@@ -227,3 +227,29 @@ class WalletDB:
             # Return empty list on any error (user doesn't exist, no transactions, etc.)
             print(f"Error fetching transaction history: {e}")
             return []
+    
+    def get_user_balance(self, user_address):
+        """
+        Calculate user's total balance from completed vault deposits.
+        
+        Args:
+            user_address: User's wallet address
+        
+        Returns:
+            Total balance in USD (sum of all completed vault deposits)
+        """
+        try:
+            c = self.conn.cursor()
+            c.execute("""
+                SELECT COALESCE(SUM(t.amount_usd), 0)
+                FROM transactions t
+                JOIN users u ON u.id = t.user_id
+                WHERE u.address = ? 
+                AND t.tx_type = 'vault_deposit'
+                AND t.status = 'completed'
+            """, (user_address,))
+            result = c.fetchone()
+            return float(result[0]) if result and result[0] is not None else 0.0
+        except Exception as e:
+            print(f"Error calculating user balance: {e}")
+            return 0.0
