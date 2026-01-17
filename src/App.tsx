@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import './App.css';
+import Onboarding1 from './components/Onboarding1';
+import Onboarding2 from './components/Onboarding2';
+import Onboarding3 from './components/Onboarding3';
 import Welcome from './components/Welcome';
 import Fund from './components/Fund';
 import Processing from './components/Processing';
@@ -7,10 +10,14 @@ import Success from './components/Success';
 import Dashboard from './components/Dashboard';
 import Settings from './components/Settings';
 
-type Screen = 'welcome' | 'fund' | 'processing' | 'success' | 'dashboard' | 'settings';
+type Screen = 'onboarding1' | 'onboarding2' | 'onboarding3' | 'welcome' | 'fund' | 'processing' | 'success' | 'dashboard' | 'settings';
 
 function App() {
-  const [screen, setScreen] = useState<Screen>('welcome');
+  const [screen, setScreen] = useState<Screen>(() => {
+    // Check if user has completed onboarding
+    const hasCompletedOnboarding = localStorage.getItem('hasCompletedOnboarding');
+    return hasCompletedOnboarding ? 'welcome' : 'onboarding1';
+  });
   const [fundAmount, setFundAmount] = useState('');
   const [showDepositModal, setShowDepositModal] = useState(false);
   const [showSavingsModal, setShowSavingsModal] = useState(false);
@@ -80,7 +87,31 @@ function App() {
     setShowSavingsModal(true);
   };
 
+  const handleOnboardingComplete = () => {
+    localStorage.setItem('hasCompletedOnboarding', 'true');
+    setScreen('welcome');
+  };
+
   switch (screen) {
+    case 'onboarding1':
+      return <Onboarding1 onNext={() => setScreen('onboarding2')} />;
+
+    case 'onboarding2':
+      return (
+        <Onboarding2
+          onNext={() => setScreen('onboarding3')}
+          onBack={() => setScreen('onboarding1')}
+        />
+      );
+
+    case 'onboarding3':
+      return (
+        <Onboarding3
+          onNext={handleOnboardingComplete}
+          onBack={() => setScreen('onboarding2')}
+        />
+      );
+
     case 'welcome':
       return <Welcome onGetStarted={() => setScreen('fund')} />;
 
