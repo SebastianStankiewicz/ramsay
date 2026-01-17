@@ -100,12 +100,12 @@ def bridgeViaLifiAndExecute(user_address: str, private_key: str, amount_wei: str
     if not transaction_request:
         raise Exception("No transactionRequest found in Li.Fi quote")
     
+    # Create account from private key
+    account: LocalAccount = eth_account.Account.from_key(private_key)
+    
     # Connect to Ethereum RPC
     MAINNET_RPC = "https://eth.llamarpc.com"
     w3 = Web3(Web3.HTTPProvider(MAINNET_RPC))
-    
-    # Create account from private key
-    account: LocalAccount = eth_account.Account.from_key(private_key)
     
     # Build transaction from transactionRequest
     tx = {
@@ -119,23 +119,11 @@ def bridgeViaLifiAndExecute(user_address: str, private_key: str, amount_wei: str
         "nonce": w3.eth.get_transaction_count(account.address)
     }
     
-    # Sign transaction using eth_account
+    # Sign transaction
     signed_txn = account.sign_transaction(tx)
     
-    # Access rawTransaction - newer versions use raw_transaction (snake_case)
-    # Try both for compatibility
-    if hasattr(signed_txn, 'raw_transaction'):
-        raw_tx = signed_txn.raw_transaction
-    elif hasattr(signed_txn, 'rawTransaction'):
-        raw_tx = signed_txn.rawTransaction
-    else:
-        # Fallback: try accessing as dict/attribute
-        raw_tx = getattr(signed_txn, 'raw_transaction', getattr(signed_txn, 'rawTransaction', None))
-        if raw_tx is None:
-            raise Exception("Could not access rawTransaction from signed transaction")
-    
     # Send transaction
-    tx_hash = w3.eth.send_raw_transaction(raw_tx)
+    tx_hash = w3.eth.send_raw_transaction(signed_txn.rawTransaction)
     
     return {
         "quote": quote,
@@ -176,7 +164,7 @@ def getVaults():
     Returns list of top 3 vaults sorted by TVL (or APR if TVL is 0).
     """
     known_vault_addresses = [
-            "0xa15099a30bbf2e68942d6f4c43d70d04faeab0a0"
+            "0x1e37a337ed460039d1b15bd3bc489de789768d5e"
     ]
         
     vaults = []
@@ -185,12 +173,13 @@ def getVaults():
         
         followers_list = vault_details.get("followers", [])
         follower_count = len(followers_list)
-        
+
+        print(vault_details)
         vault_data = {
             "address": vault_address,
             "name": vault_details.get("name", ""),
             "leader": vault_details.get("leader", ""),
-            "tvl": vault_details.get("tvl", 0),
+            "tvl": vault_details.get("maxDistributable", 0),
             "closed": vault_details.get("isClosed", False),
             "apr": vault_details.get("apr", 0),
             "followerCount": follower_count,
@@ -292,6 +281,7 @@ def create_app():
     @app.route("/depositToVault", methods=["POST"])
     def depositToVaultRoute():
         data = request.get_json()
+        print(data)
         
         user_address = data.get("userAddress")
         private_key = data.get("privateKey")
