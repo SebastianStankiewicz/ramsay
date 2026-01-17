@@ -2,6 +2,8 @@ import requests
 import urllib3
 from hyperliquid.info import Info
 from hyperliquid.utils import constants
+from flask import Flask, jsonify, request
+import os
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -19,3 +21,41 @@ info = Info(constants.TESTNET_API_URL, skip_ws=True)
 
 user_state = info.user_state("0xD5Bf397b557c03814b2eF5272CCb06114DC2eb8D")
 print(user_state)
+
+#Takes a user object - will use lifi to swap this ether on eth to hyperliquid EVM eth
+#Gives the user USDC on hyperliquid
+def bridgeViaLifi(user):
+    pass
+
+#Will take the USDC and put into the spot wallet
+def convertEvmToSpot(user):
+    pass
+
+#Will return possible vaults - ideally we just want to hard code the "safest" vault adress
+def getVaults():
+    pass
+
+#For depositing the users perp usdc to a vault
+def depositToVault():
+    pass
+
+def create_app():
+    app = Flask(__name__)
+    app.config["DEBUG"] = os.getenv("FLASK_DEBUG", "true").lower() == "true"
+
+    @app.route("/createAccount")
+    def createAccount():
+        #Will create a user account
+        #User account will then have its wallet key pair created etc
+        return jsonify({"status": "ok", "message": "Flask API running"})
+
+    @app.route("/deposit")
+    def deposit():
+        #Deposit via moonpay or similar as eth on the eth chain 
+        return jsonify({"status": "ok", "message": "Flask API running"})
+
+
+    return app
+if __name__ == "__main__":
+    app = create_app()
+    app.run(host="0.0.0.0", port=5069)
