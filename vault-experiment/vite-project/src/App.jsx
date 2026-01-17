@@ -1,24 +1,12 @@
 import { useState, useEffect } from "react";
 import "./App.css";
-import MetaMaskSDK from "@metamask/sdk";
-
-const HYPERLIQUID_DOMAIN = {
-  name: "Exchange",
-  version: "1",
-  chainId: 998, // Testnet chain
-  verifyingContract: "0x0000000000000000000000000000000000000000",
-};
-
-const VAULT_TRANSFER_TYPES = {
-  VaultTransfer: [
-    { name: "vaultAddress", type: "address" },
-    { name: "isDeposit", type: "bool" },
-    { name: "usd", type: "uint256" },
-    { name: "nonce", type: "uint64" },
-  ],
-};
+import { ExchangeClient, HttpTransport, InfoClient } from "@nktkas/hyperliquid";
+import { createWalletClient, custom } from "viem";
+import {hyperliquidEvmTestnet} from 'viem/chains';
+import { ethers } from "ethers";
 
 function App() {
+  const provider = new ethers.BrowserProvider(window.ethereum)
   const [account, setAccount] = useState(null);
   const [ethereum, setEthereum] = useState(null);
 
@@ -35,12 +23,8 @@ function App() {
 
   // --- Initialize MetaMask ---
   useEffect(() => {
-    if (window.ethereum) setEthereum(window.ethereum);
-    else {
-      const MMSDK = new MetaMaskSDK({
-        dappMetadata: { name: "Hyperliquid Testnet UI", url: window.location.href },
-      });
-      setEthereum(MMSDK.getProvider());
+    if (window.ethereum) {
+      setEthereum(window.ethereum);
     }
   }, []);
 
@@ -54,6 +38,7 @@ function App() {
       await fetchPerpBalance(accounts[0]);
     } catch (err) {
       console.error(err);
+      alert(`Connection failed: ${err.message}`);
     }
   };
 
@@ -61,13 +46,11 @@ function App() {
   const fetchSpotBalance = async (wallet) => {
     try {
       setLoadingSpot(true);
-      const res = await fetch("https://api.hyperliquid-testnet.xyz/info", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "spotClearinghouseState", user: wallet }),
-      });
-      const data = await res.json();
-      const balance = data?.balances?.find((b) => b.coin === "USDC")?.total || 0;
+      const transport = new HttpTransport({ isTestnet: true });
+      const infoClient = new InfoClient({ transport });
+      
+      const data = await infoClient.spotClearinghouseState({ user: wallet });
+      const balance = data?.balances?.find((b) => b.coin === "USDC")?.total || "0";
       setSpotBalance(Number(balance));
     } catch (err) {
       console.error(err);
@@ -80,13 +63,11 @@ function App() {
   const fetchPerpBalance = async (wallet) => {
     try {
       setLoadingPerp(true);
-      const res = await fetch("https://api.hyperliquid-testnet.xyz/info", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "clearinghouseState", user: wallet }),
-      });
-      const data = await res.json();
-      const balance = data?.marginSummary?.accountValue || 0;
+      const transport = new HttpTransport({ isTestnet: true });
+      const infoClient = new InfoClient({ transport });
+      
+      const data = await infoClient.clearinghouseState({ user: wallet });
+      const balance = data?.marginSummary?.accountValue || "0";
       setPerpBalance(Number(balance));
     } catch (err) {
       console.error(err);
@@ -95,36 +76,46 @@ function App() {
     }
   };
 
-  // --- Vault deposit/withdraw ---
+  // --- Vault deposit/withdraw using nktkas SDK ---
   const vaultTransfer = async (isDeposit) => {
-    if (!client || !amount || !vaultId) return alert("Missing info");
+    if (!ethereum || !amount || !vaultId || !account)
+      return alert("Missing vault address, amount, or wallet");
   
     try {
-      // Hyperliquid expects USD in 6 decimals
-      const usdAmount = Math.floor(Number(amount) * 1e6);
-  
-      // Build the action
-      const action = {
-        type: "vaultTransfer",
+      // Create viem wallet client from MetaMask
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      
+      const transport = new HttpTransport();
+
+      const client = new ExchangeClient({transport, wallet});
+
+      const result = await client.vaultTransfer({
         vaultAddress: vaultId,
-        isDeposit,
-        usd: usdAmount,
-      };
-  
-      // Use the SDK directly
-      const result = await client.exchange.vaultTransfer(action);
+        isDeposit: true,
+        usd: amount,
+      });
   
       console.log("Vault transfer result:", result);
       alert(`${isDeposit ? "Deposit" : "Withdrawal"} successful!`);
   
-      // Refresh balances
-      await fetchSpotBalance(account, client);
-      await fetchPerpBalance(account, client);
+      await fetchSpotBalance(account);
+      await fetchPerpBalance(account);
     } catch (err) {
       console.error(err);
       alert(`Vault transfer failed: ${err.message}`);
     }
   };
+
+  const connectwalletHandler = () => {
+    if (window.Ethereum) {
+        provider.send("eth_requestAccounts", []).then(async () => {
+            await accountChangedHandler(provider.getSigner());
+        })
+    } else {
+        alert("Please Install Metamask!!!");
+    }
+}
 
   return (
     <>
