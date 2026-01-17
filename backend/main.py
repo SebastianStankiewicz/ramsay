@@ -7,6 +7,7 @@ from flask import Flask, jsonify, request
 import os
 import eth_account
 from eth_account.signers.local import LocalAccount
+from web3 import Web3
 from User import *
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -77,6 +78,59 @@ def bridgeViaLifi(user_address: str, amount_wei: str, to_address: str = None):
         raise Exception(error_msg)
     except Exception as e:
         raise Exception(f"Li.Fi request failed: {str(e)}")
+
+def bridgeViaLifiAndExecute(user_address: str, private_key: str, amount_wei: str, to_address: str = None):
+    """
+    Get a Li.Fi quote and execute the bridge transaction in one step.
+    
+    Args:
+        user_address: User's Ethereum address
+        private_key: User's private key (hex string)
+        amount_wei: Amount in wei as string
+        to_address: Receiving address (optional, defaults to fromAddress)
+    
+    Returns:
+        Dictionary with quote info and transaction hash
+    """
+    # Get quote from Li.Fi
+    quote = bridgeViaLifi(user_address, amount_wei, to_address)
+    
+    # Extract transaction request from quote
+    transaction_request = quote.get("transactionRequest")
+    if not transaction_request:
+        raise Exception("No transactionRequest found in Li.Fi quote")
+    
+    # Create account from private key
+    account: LocalAccount = eth_account.Account.from_key(private_key)
+    
+    # Connect to Ethereum RPC
+    MAINNET_RPC = "https://eth.llamarpc.com"
+    w3 = Web3(Web3.HTTPProvider(MAINNET_RPC))
+    
+    # Build transaction from transactionRequest
+    tx = {
+        "from": transaction_request["from"],
+        "to": transaction_request["to"],
+        "value": int(transaction_request["value"], 16) if transaction_request.get("value") else 0,
+        "data": transaction_request["data"],
+        "gas": int(transaction_request["gasLimit"], 16) if transaction_request.get("gasLimit") else 21000,
+        "gasPrice": int(transaction_request["gasPrice"], 16) if transaction_request.get("gasPrice") else w3.eth.gas_price,
+        "chainId": transaction_request["chainId"],
+        "nonce": w3.eth.get_transaction_count(account.address)
+    }
+    
+    # Sign transaction
+    signed_txn = account.sign_transaction(tx)
+    
+    # Send transaction
+    tx_hash = w3.eth.send_raw_transaction(signed_txn.rawTransaction)
+    
+    return {
+        "quote": quote,
+        "txHash": tx_hash.hex(),
+        "status": "pending",
+        "message": "Bridge transaction submitted to network"
+    }
 
 #Will take the USDC and put into the spot wallet
 def convertEvmToSpot(user_address: str, private_key: str, usd_amount: float):
@@ -186,24 +240,30 @@ def create_app():
     #This can be called via like after a TX been made 
     @app.route("/processDeposit", methods=["POST"])
     def processDeposit():
+        """
+        Process deposit by bridging ETH from Ethereum to HyperLiquid via Li.Fi.
+        Gets quote and executes the bridge transaction in one step.
+        """
         data = request.get_json()
         
         user_address = data.get("userAddress")
+        private_key = data.get("privateKey")
         amount_wei = data.get("amountWei")
+        to_address = data.get("toAddress")  # Optional
         
-        if not user_address or not amount_wei:
+        if not user_address or not private_key or not amount_wei:
             return jsonify({
                 "status": "error",
-                "message": "Missing required fields: userAddress, amountWei"
+                "message": "Missing required fields: userAddress, privateKey, amountWei"
             }), 400
         
         try:
-            # Get Li.Fi quote for bridging
-            quote = bridgeViaLifi(user_address, amount_wei)
+            # Get quote and execute bridge in one step
+            result = bridgeViaLifiAndExecute(user_address, private_key, amount_wei, to_address)
             return jsonify({
                 "status": "ok",
-                "message": "Bridge quote retrieved",
-                "data": quote
+                "message": result["message"],
+                "data": result
             })
         except Exception as e:
             return jsonify({
