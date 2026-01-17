@@ -56,8 +56,8 @@ def create_app():
     @app.route("/deposit")
     def deposit():
         #Deposit via moonpay or similar as eth on the eth chain 
-
         #Mark as validated or idk a transaction queue that will wait for this to validate OR offload this to the fron end aand only except complete TX???
+        #FOR NOW THIS WILL CALL A TEST NET FAUCET
         return jsonify({"status": "ok", "message": "Flask API running"})
     
     #This can be called via like after a TX been made 
