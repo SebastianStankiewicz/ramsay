@@ -19,7 +19,7 @@ function Home() {
     const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$encodeClub$2f$hyperliquid$2f$frontend$2d$rewrite$2f$my$2d$app$2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useRouter"])();
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$encodeClub$2f$hyperliquid$2f$frontend$2d$rewrite$2f$my$2d$app$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "Home.useEffect": ()=>{
-            const hasCompletedOnboarding = localStorage.getItem('onboardingComplete') === 'true';
+            const hasCompletedOnboarding = localStorage.getItem('onboardingComplete2') === 'true';
             if (hasCompletedOnboarding) {
                 router.push('/dashboard');
             } else {

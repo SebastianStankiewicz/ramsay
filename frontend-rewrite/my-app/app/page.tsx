@@ -7,7 +7,7 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    const hasCompletedOnboarding = localStorage.getItem('onboardingComplete') === 'true';
+    const hasCompletedOnboarding = localStorage.getItem('onboardingComplete2') === 'true';
     
     if (hasCompletedOnboarding) {
       router.push('/dashboard');

@@ -6,11 +6,13 @@ interface OnboardingStep1Props {
 }
 
 export function OnboardingStep1({ onNext }: OnboardingStep1Props) {
+
+
   return (
     <OnboardingLayout
       title="RAMSAY"
       subtitle="It's basically free money"
-      buttonText="Create an account"
+      buttonText="Get Started"
       onButtonClick={onNext}
     />
   );
