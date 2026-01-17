@@ -164,7 +164,7 @@ def getVaults():
     Returns list of top 3 vaults sorted by TVL (or APR if TVL is 0).
     """
     known_vault_addresses = [
-            "0x1e37a337ed460039d1b15bd3bc489de789768d5e"
+            "0xa15099a30bbf2e68942d6f4c43d70d04faeab0a0"
     ]
         
     vaults = []
@@ -173,13 +173,12 @@ def getVaults():
         
         followers_list = vault_details.get("followers", [])
         follower_count = len(followers_list)
-
-        print(vault_details)
+        
         vault_data = {
             "address": vault_address,
             "name": vault_details.get("name", ""),
             "leader": vault_details.get("leader", ""),
-            "tvl": vault_details.get("maxDistributable", 0),
+            "tvl": vault_details.get("tvl", 0),
             "closed": vault_details.get("isClosed", False),
             "apr": vault_details.get("apr", 0),
             "followerCount": follower_count,
@@ -281,7 +280,6 @@ def create_app():
     @app.route("/depositToVault", methods=["POST"])
     def depositToVaultRoute():
         data = request.get_json()
-        print(data)
         
         user_address = data.get("userAddress")
         private_key = data.get("privateKey")
