@@ -100,12 +100,12 @@ def bridgeViaLifiAndExecute(user_address: str, private_key: str, amount_wei: str
     if not transaction_request:
         raise Exception("No transactionRequest found in Li.Fi quote")
     
-    # Create account from private key
-    account: LocalAccount = eth_account.Account.from_key(private_key)
-    
     # Connect to Ethereum RPC
     MAINNET_RPC = "https://eth.llamarpc.com"
     w3 = Web3(Web3.HTTPProvider(MAINNET_RPC))
+    
+    # Create account from private key
+    account: LocalAccount = eth_account.Account.from_key(private_key)
     
     # Build transaction from transactionRequest
     tx = {
@@ -119,11 +119,23 @@ def bridgeViaLifiAndExecute(user_address: str, private_key: str, amount_wei: str
         "nonce": w3.eth.get_transaction_count(account.address)
     }
     
-    # Sign transaction
+    # Sign transaction using eth_account
     signed_txn = account.sign_transaction(tx)
     
+    # Access rawTransaction - newer versions use raw_transaction (snake_case)
+    # Try both for compatibility
+    if hasattr(signed_txn, 'raw_transaction'):
+        raw_tx = signed_txn.raw_transaction
+    elif hasattr(signed_txn, 'rawTransaction'):
+        raw_tx = signed_txn.rawTransaction
+    else:
+        # Fallback: try accessing as dict/attribute
+        raw_tx = getattr(signed_txn, 'raw_transaction', getattr(signed_txn, 'rawTransaction', None))
+        if raw_tx is None:
+            raise Exception("Could not access rawTransaction from signed transaction")
+    
     # Send transaction
-    tx_hash = w3.eth.send_raw_transaction(signed_txn.rawTransaction)
+    tx_hash = w3.eth.send_raw_transaction(raw_tx)
     
     return {
         "quote": quote,
