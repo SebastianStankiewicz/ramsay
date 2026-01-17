@@ -1,77 +1,101 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap');
+
 :root {
-  --bg-primary: #ffffff;
-  --bg-secondary: #f7f7f7;
-  --bg-card: #f2f2f2;
-  --bg-input: #f7f7f7;
-  --text-primary: #000000;
-  --text-secondary: #6b6b6b;
-  --text-muted: #9b9b9b;
-  --accent: #0666eb;
-  --accent-hover: #0555cc;
-  --success: #00a854;
-  --error: #e02020;
-  --border: #e5e5e5;
-  --border-light: #ebebeb;
+  /* Kit Color Palette */
+  --bg: #FFFFFF;
+  --bg-secondary: #F8F9FA;
+  --bg-card: #FFFFFF;
 
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+  /* Primary Action - CommBank Yellow */
+  --primary: #FFCC00;
+  --primary-soft: #FFF8DC;
+
+  /* Functional Colors */
+  --success: #28A745;
+  --success-bg: #E6F7ED;
+  --expense: #F2F4F7;
+  --expense-text: #666666;
+
+  /* Accent Colors */
+  --coral: #FF8A80;
+  --coral-bg: #FFF0EE;
+  --periwinkle: #7C8FFF;
+  --periwinkle-bg: #EEF0FF;
+  --lavender: #B8A9E8;
+  --lavender-bg: #F5F2FF;
+
+  /* Text */
+  --text: #000000;
+  --text-secondary: #666666;
+  --text-muted: #999999;
+
+  /* Borders */
+  --border: #E8E8E8;
+  --border-light: #F0F0F0;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+
+  /* Radii - Kit uses very rounded corners */
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* Animation */
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Typography - Geometric Sans */
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  font-feature-settings: 'zero' 1; /* Slashed zeros */
   line-height: 1.4;
-  font-weight: 400;
-
-  color-scheme: light;
-  color: var(--text-primary);
-  background-color: var(--bg-primary);
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  color: var(--text);
+  background: var(--bg);
 }
 
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  margin: 0;
-  min-width: 320px;
   min-height: 100vh;
-  background: var(--bg-primary);
+  min-height: 100dvh;
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  margin: 0;
-  font-weight: 600;
+h1, h2, h3 {
+  font-weight: 700;
   letter-spacing: -0.02em;
-}
-
-p {
-  margin: 0;
-}
-
-a {
-  color: var(--accent);
-  text-decoration: none;
-  transition: opacity 0.2s ease;
-}
-
-a:hover {
-  opacity: 0.8;
+  color: var(--text);
 }
 
 button {
   font-family: inherit;
   cursor: pointer;
   border: none;
-  outline: none;
-  transition: all 0.2s ease;
-}
-
-button:active {
-  transform: scale(0.98);
+  background: none;
 }
 
 input {
   font-family: inherit;
-  outline: none;
   border: none;
+  outline: none;
+}
+
+a {
+  color: var(--periwinkle);
+  text-decoration: none;
+}
+
+/* Slashed zero for currency - fallback */
+.currency-display {
+  font-variant-numeric: slashed-zero;
+  font-feature-settings: 'zero' 1;
 }
