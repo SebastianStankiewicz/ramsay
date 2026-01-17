@@ -281,6 +281,7 @@ def create_app():
     @app.route("/depositToVault", methods=["POST"])
     def depositToVaultRoute():
         data = request.get_json()
+        print(data)
         
         user_address = data.get("userAddress")
         private_key = data.get("privateKey")
