@@ -22,7 +22,7 @@ def privileged_merge_environment_settings(self, url, proxies, stream, verify, ce
 
 requests.Session.merge_environment_settings = privileged_merge_environment_settings
 
-info = Info(constants.TESTNET_API_URL, skip_ws=True)
+info = Info(constants.MAINNET_API_URL, skip_ws=True)
 
 user_state = info.user_state("0xD5Bf397b557c03814b2eF5272CCb06114DC2eb8D")
 print(user_state)
