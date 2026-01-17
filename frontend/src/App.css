@@ -1217,6 +1217,297 @@
   margin: 0;
 }
 
+/* ================================
+   Piggybank Carousel
+   ================================ */
+.piggybank-carousel-container {
+  width: 100%;
+  margin: 32px 0;
+  animation: fadeInUp 0.6s var(--ease-out) 0.3s backwards;
+}
+
+.piggybank-carousel {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.piggybank-track {
+  display: flex;
+  transition: transform 0.6s var(--spring);
+  will-change: transform;
+}
+
+.piggybank-card {
+  min-width: 100%;
+  padding: 0 12px;
+  flex-shrink: 0;
+  transition: transform 0.6s var(--spring), opacity 0.4s var(--ease-out);
+}
+
+.piggybank-card.active {
+  opacity: 1;
+}
+
+.piggybank-card:not(.active) {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.piggybank-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.piggybank-name {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--black);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.piggybank-apr {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding: 10px 18px;
+  border-radius: 16px;
+  border: 2px solid;
+  transition: all 0.3s var(--ease-out);
+}
+
+.piggybank-apr.positive {
+  background: rgba(34, 197, 94, 0.1);
+  border-color: #22c55e;
+  color: #22c55e;
+}
+
+.piggybank-apr.negative {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.apr-value {
+  font-size: 24px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.apr-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 4px;
+}
+
+.piggybank-visual {
+  position: relative;
+  background: var(--gray-50);
+  border: 2px solid var(--gray-200);
+  border-radius: 28px;
+  padding: 40px;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  min-height: 320px;
+  transition: all 0.4s var(--ease-out);
+}
+
+.piggybank-card.active .piggybank-visual {
+  border-color: var(--black);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  transform: scale(1.02);
+}
+
+.piggybank-image {
+  width: 180px;
+  height: auto;
+  object-fit: contain;
+  animation: pigBounce 3s var(--ease-in-out) infinite;
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.1));
+}
+
+@keyframes pigBounce {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-8px) scale(1.05);
+  }
+}
+
+.piggybank-balance {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.balance-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.balance-amount {
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--black);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+}
+
+.piggybank-deposit-btn {
+  width: 100%;
+  padding: 20px;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--white);
+  background: var(--black);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.4s var(--ease-out);
+  position: relative;
+  overflow: hidden;
+  letter-spacing: 0.02em;
+}
+
+.piggybank-deposit-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--white);
+  transform: translateY(100%);
+  transition: transform 0.4s var(--ease-out);
+}
+
+.piggybank-deposit-btn:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+}
+
+.piggybank-deposit-btn:hover::before {
+  transform: translateY(0);
+}
+
+.piggybank-deposit-btn:hover span,
+.piggybank-deposit-btn:hover svg {
+  position: relative;
+  z-index: 1;
+  color: var(--black);
+}
+
+.piggybank-deposit-btn:active {
+  transform: translateY(-2px) scale(0.98);
+}
+
+.piggybank-deposit-btn span,
+.piggybank-deposit-btn svg {
+  position: relative;
+  z-index: 1;
+  transition: color 0.3s var(--ease-out);
+}
+
+.piggybank-deposit-btn svg {
+  width: 22px;
+  height: 22px;
+  transition: transform 0.4s var(--ease-out), color 0.3s var(--ease-out);
+}
+
+.piggybank-deposit-btn:hover svg {
+  transform: translateY(-2px);
+}
+
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--white);
+  border: 2px solid var(--gray-200);
+  border-radius: 16px;
+  color: var(--black);
+  z-index: 10;
+  transition: all 0.3s var(--ease-out);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.carousel-arrow:hover {
+  background: var(--black);
+  border-color: var(--black);
+  color: var(--white);
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15);
+}
+
+.carousel-arrow:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.carousel-arrow svg {
+  width: 24px;
+  height: 24px;
+}
+
+.carousel-arrow-left {
+  left: 0;
+}
+
+.carousel-arrow-right {
+  right: 0;
+}
+
+.carousel-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.carousel-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--gray-300);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.3s var(--ease-out);
+}
+
+.carousel-dot:hover {
+  background: var(--gray-400);
+  transform: scale(1.2);
+}
+
+.carousel-dot.active {
+  width: 24px;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--black);
+  transform: scale(1);
+}
+
 .vault-amount {
   text-align: center;
   padding: 32px;
@@ -2340,6 +2631,81 @@
   .fund-header h1 {
     font-size: 36px;
   }
+
+  .onboarding-title {
+    font-size: 48px;
+  }
+
+  .logo-animated {
+    width: 120px;
+    height: 120px;
+    font-size: 64px;
+  }
+
+  .onboarding-logo-large {
+    width: 160px;
+    height: 160px;
+  }
+
+  .flow-icon {
+    width: 100px;
+    height: 100px;
+  }
+
+  .flow-icon svg {
+    width: 50px;
+    height: 50px;
+  }
+
+  .wallet-card {
+    width: 240px;
+    height: 150px;
+  }
+
+  .onboarding-flow {
+    gap: 16px;
+  }
+
+  .flow-arrow {
+    width: 32px;
+    height: 32px;
+  }
+
+  .flow-arrow svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .piggybank-image {
+    width: 140px;
+  }
+
+  .piggybank-visual {
+    min-height: 260px;
+    padding: 32px 24px;
+  }
+
+  .carousel-arrow {
+    width: 40px;
+    height: 40px;
+  }
+
+  .carousel-arrow svg {
+  width: 20px;
+  height: 20px;
+  }
+
+  .piggybank-name {
+    font-size: 18px;
+  }
+
+  .apr-value {
+    font-size: 20px;
+  }
+
+  .balance-amount {
+    font-size: 28px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -2695,7 +3061,7 @@ input:focus-visible {
   height: 22px;
 }
 
-.onboarding-content {
+.onboarding-visual-container {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -2704,35 +3070,32 @@ input:focus-visible {
   gap: 32px;
   text-align: center;
   padding: 40px 0;
-  animation: fadeInUp 0.6s var(--ease-out);
+  position: relative;
 }
 
-.onboarding-icon {
-  width: 100px;
-  height: 100px;
-  background: var(--black);
-  border-radius: 24px;
+.onboarding-pig-container {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 16px;
-  animation: logoEntrance 0.8s var(--spring) 0.2s backwards;
+  animation: fadeInUp 0.8s var(--spring) backwards;
 }
 
-.onboarding-icon svg {
-  width: 50px;
-  height: 50px;
-  color: var(--white);
+.onboarding-pig {
+  max-width: 300px;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  animation: pigFloat 3s var(--ease-in-out) infinite;
+  filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.1));
 }
 
-.onboarding-title {
-  font-size: 40px;
-  font-weight: 900;
-  color: var(--black);
-  letter-spacing: -0.04em;
-  margin: 0;
-  line-height: 1.2;
-  animation: fadeInUp 0.6s var(--ease-out) 0.3s backwards;
+@keyframes pigFloat {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-10px) scale(1.02);
+  }
 }
 
 .onboarding-description {
@@ -2742,7 +3105,306 @@ input:focus-visible {
   line-height: 1.6;
   max-width: 400px;
   margin: 0;
-  animation: fadeInUp 0.6s var(--ease-out) 0.4s backwards;
+  padding: 0 24px;
+  animation: fadeInUp 0.8s var(--spring) 0.2s backwards;
+}
+
+/* Onboarding 1 - Logo Animation */
+.onboarding-logo-large {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-animated {
+  width: 140px;
+  height: 140px;
+  background: var(--black);
+  border-radius: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 80px;
+  font-weight: 900;
+  color: var(--white);
+  position: relative;
+  z-index: 1;
+  animation: logoFloat 2s var(--ease-in-out) infinite;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes logoFloat {
+  0%, 100% {
+    transform: translateY(0) rotate(-2deg) scale(1);
+  }
+  50% {
+    transform: translateY(-10px) rotate(2deg) scale(1.05);
+  }
+}
+
+.logo-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: var(--black);
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: particleOrbit 3s var(--ease-in-out) infinite var(--delay, 0s);
+  opacity: 0.3;
+}
+
+@keyframes particleOrbit {
+  0% {
+    transform: translate(-50%, -50%) rotate(var(--angle, 0deg)) translateX(100px) rotate(calc(-1 * var(--angle, 0deg)));
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(calc(var(--angle, 0deg) + 360deg)) translateX(100px) rotate(calc(-1 * var(--angle, 0deg) - 360deg));
+    opacity: 0;
+  }
+}
+
+.onboarding-title {
+  font-size: 64px;
+  font-weight: 900;
+  color: var(--black);
+  letter-spacing: -0.05em;
+  margin: 0;
+  line-height: 1;
+  animation: titlePulse 2s var(--ease-in-out) infinite;
+}
+
+@keyframes titlePulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.02);
+    opacity: 0.9;
+  }
+}
+
+/* Onboarding 2 - Flow Animation */
+.onboarding-flow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+  max-width: 600px;
+  animation: fadeInUp 0.8s var(--spring) backwards;
+}
+
+.flow-step {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  animation: flowStepIn 0.8s var(--spring) backwards;
+}
+
+.flow-step:nth-child(1) {
+  animation-delay: 0.2s;
+}
+
+.flow-step:nth-child(2) {
+  animation-delay: 0.4s;
+}
+
+.flow-step:nth-child(3) {
+  animation-delay: 0.6s;
+}
+
+@keyframes flowStepIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.flow-icon {
+  width: 120px;
+  height: 120px;
+  background: var(--black);
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: iconBounce 2s var(--ease-in-out) infinite;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+}
+
+@keyframes iconBounce {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-8px) scale(1.05);
+  }
+}
+
+.flow-icon svg {
+  width: 60px;
+  height: 60px;
+  color: var(--white);
+}
+
+.flow-arrow {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gray-400);
+  animation: arrowFlow 1.5s var(--ease-in-out) infinite;
+}
+
+@keyframes arrowFlow {
+  0%, 100% {
+    transform: translateX(0);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateX(8px);
+    opacity: 1;
+  }
+}
+
+.flow-arrow svg {
+  width: 32px;
+  height: 32px;
+}
+
+/* Onboarding 3 - Wallet Visual */
+.onboarding-wallet-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 48px;
+  flex-wrap: wrap;
+  animation: fadeInUp 0.8s var(--spring) backwards;
+}
+
+.wallet-card {
+  width: 280px;
+  height: 180px;
+  background: var(--black);
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  animation: cardFloat 3s var(--ease-in-out) infinite;
+}
+
+@keyframes cardFloat {
+  0%, 100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-12px) rotate(2deg);
+  }
+}
+
+.wallet-card-glow {
+  position: absolute;
+  top: -50%;
+  right: -30%;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: glowRotate 4s linear infinite;
+}
+
+@keyframes glowRotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.wallet-chip {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  width: 48px;
+  height: 36px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.05) 100%);
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.wallet-lines {
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
+  right: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.wallet-line {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  animation: lineReveal 0.6s var(--ease-out) backwards;
+}
+
+@keyframes lineReveal {
+  from {
+    width: 0;
+    opacity: 0;
+  }
+  to {
+    width: 100%;
+    opacity: 1;
+  }
+}
+
+.key-visual {
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--black);
+  animation: keyFloat 2.5s var(--ease-in-out) infinite;
+}
+
+@keyframes keyFloat {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-10px) rotate(-5deg);
+  }
+  75% {
+    transform: translateY(-10px) rotate(5deg);
+  }
+}
+
+.key-visual svg {
+  width: 80px;
+  height: 80px;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.1));
 }
 
 .onboarding-steps {

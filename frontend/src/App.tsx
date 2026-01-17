@@ -13,11 +13,7 @@ import Settings from './components/Settings';
 type Screen = 'onboarding1' | 'onboarding2' | 'onboarding3' | 'welcome' | 'fund' | 'processing' | 'success' | 'dashboard' | 'settings';
 
 function App() {
-  const [screen, setScreen] = useState<Screen>(() => {
-    // Check if user has completed onboarding
-    const hasCompletedOnboarding = localStorage.getItem('hasCompletedOnboarding');
-    return hasCompletedOnboarding ? 'welcome' : 'onboarding1';
-  });
+  const [screen, setScreen] = useState<Screen>('onboarding1');
   const [fundAmount, setFundAmount] = useState('');
   const [showDepositModal, setShowDepositModal] = useState(false);
   const [showSavingsModal, setShowSavingsModal] = useState(false);
@@ -44,8 +40,6 @@ function App() {
     localStorage.setItem('privateKey', key);
     return key;
   });
-
-  const APY = 12.5;
 
   const handleApplePay = () => {
     const amount = parseFloat(fundAmount) || 100;
@@ -97,7 +91,7 @@ function App() {
       return <Onboarding1 onNext={() => setScreen('onboarding2')} />;
 
     case 'onboarding2':
-      return (
+    return (
         <Onboarding2
           onNext={() => setScreen('onboarding3')}
           onBack={() => setScreen('onboarding1')}
@@ -105,7 +99,7 @@ function App() {
       );
 
     case 'onboarding3':
-      return (
+    return (
         <Onboarding3
           onNext={handleOnboardingComplete}
           onBack={() => setScreen('onboarding2')}
@@ -116,7 +110,7 @@ function App() {
       return <Welcome onGetStarted={() => setScreen('fund')} />;
 
     case 'fund':
-      return (
+    return (
         <Fund
           fundAmount={fundAmount}
           onFundAmountChange={setFundAmount}
@@ -133,11 +127,10 @@ function App() {
       return <Success amount={parseFloat(fundAmount) || 100} />;
 
     case 'dashboard':
-      return (
+    return (
         <Dashboard
           balance={balance}
           savingsBalance={savingsBalance}
-          apy={APY}
           showDepositModal={showDepositModal}
           showSavingsModal={showSavingsModal}
           savingsAction={savingsAction}
@@ -153,7 +146,7 @@ function App() {
       );
 
     case 'settings':
-      return (
+  return (
         <Settings
           walletAddress={walletAddress}
           privateKey={privateKey}

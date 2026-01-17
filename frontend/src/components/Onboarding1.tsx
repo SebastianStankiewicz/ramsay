@@ -1,3 +1,5 @@
+import pigImage from '../assets/pig.png';
+
 type Onboarding1Props = {
   onNext: () => void;
 };
@@ -6,17 +8,12 @@ export default function Onboarding1({ onNext }: Onboarding1Props) {
   return (
     <div className="app">
       <div className="onboarding-screen">
-        <div className="onboarding-content">
-          <div className="onboarding-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M12 2L2 7l10 5 10-5-10-5z" />
-              <path d="M2 17l10 5 10-5M2 12l10 5 10-5" />
-            </svg>
+        <div className="onboarding-visual-container">
+          <div className="onboarding-pig-container">
+            <img src={pigImage} alt="Money pig" className="onboarding-pig" />
           </div>
-          <h1 className="onboarding-title">Welcome to Ramsay</h1>
           <p className="onboarding-description">
-            Earn high yields on your savings with Hyperliquid vaults. 
-            No crypto knowledge required.
+            Earn high yields on your savings with Hyperliquid vaults, no crypto knowledge required.
           </p>
         </div>
         <div className="onboarding-footer">
